@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY TWINS — Il tuo sosia esiste. Trovalo.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&family=Noto+Sans+JP&family=Noto+Sans+KR&family=Noto+Sans+Devanagari&family=Noto+Sans+Arabic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#1A1614;--ink-soft:#2A2420;--ink-mid:#3A3028;
+  --gold:#C9A84C;--gold-light:#F0DFA0;--gold-dark:#8A6A1F;
+  --cream:#FAF7F2;--cream-dark:#F0EBE0;--cream-mid:#E8E0D4;
+  --muted:#8A8078;--white:#fff;
+  --teal:#1D9E75;--teal-bg:#E1F5EE;--teal-dark:#0F6E56;
+  --purple:#534AB7;--purple-bg:#EEEDFE;
+  --amber:#854F0B;--amber-bg:#FAEEDA;
+  --radius:12px;--radius-sm:8px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--cream);line-height:1.6;}
+
+/* ── NAV ── */
+nav{background:var(--ink);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;border-bottom:0.5px solid rgba(201,168,76,0.15);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:20px;letter-spacing:3px;color:var(--gold);text-decoration:none;}
+.nav-logo span{color:rgba(255,255,255,0.3);}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-link{font-size:13px;color:rgba(255,255,255,0.45);cursor:pointer;text-decoration:none;transition:color .2s;}
+.nav-link:hover{color:var(--gold);}
+.lang-row{display:flex;gap:4px;}
+.lb{background:none;border:0.5px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.lb.on{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:500;}
+.nav-cta{background:var(--gold);color:var(--ink);border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;}
+.nav-cta:hover{opacity:.85;}
+.nav-menu{display:none;}
+
+/* ── HERO ── */
+.hero{background:var(--ink);padding:80px 40px 72px;display:flex;align-items:center;gap:48px;min-height:88vh;}
+.hero-left{flex:1;max-width:520px;}
+.hero-eyebrow{font-size:11px;letter-spacing:2.5px;color:var(--gold);margin-bottom:16px;font-weight:500;}
+.hero-title{font-family:'Playfair Display',serif;font-size:52px;line-height:1.1;color:var(--white);margin-bottom:20px;}
+.hero-title em{color:var(--gold);font-style:normal;}
+.hero-sub{font-size:16px;color:rgba(255,255,255,0.5);line-height:1.75;margin-bottom:32px;max-width:420px;}
+.hero-btns{display:flex;gap:12px;margin-bottom:36px;flex-wrap:wrap;}
+.btn-hp{background:var(--gold);color:var(--ink);border:none;border-radius:10px;padding:14px 28px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;}
+.btn-hp:hover{opacity:.85;}
+.btn-hs{background:none;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7);border-radius:10px;padding:13px 22px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-hs:hover{border-color:var(--gold);color:var(--gold);}
+.hero-stats{display:flex;gap:32px;}
+.hstat-num{font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);}
+.hstat-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px;}
+.hero-right{flex:0 0 280px;}
+.hero-card-stack{position:relative;height:320px;}
+.hcard{position:absolute;background:var(--ink-soft);border-radius:14px;border:0.5px solid rgba(201,168,76,0.2);padding:16px;width:200px;animation:floatIn .6s ease both;}
+.hcard:nth-child(1){top:0;left:40px;animation-delay:.1s;}
+.hcard:nth-child(2){top:72px;left:0;animation-delay:.2s;}
+.hcard:nth-child(3){top:144px;left:60px;animation-delay:.3s;}
+@keyframes floatIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.hc-ava{width:44px;height:44px;border-radius:50%;background:var(--ink-mid);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px;}
+.hc-id{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px;}
+.hc-pct{font-size:22px;font-weight:500;color:var(--gold);}
+.hc-bar{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:8px;overflow:hidden;}
+.hc-fill{height:100%;background:var(--gold);border-radius:2px;}
+
+/* ── SECTIONS ── */
+.sec{padding:72px 40px;}
+.sec-dark{background:var(--ink);padding:72px 40px;}
+.sec-alt{background:var(--cream-dark);padding:72px 40px;}
+.sec-eyebrow{font-size:11px;letter-spacing:2px;color:var(--gold-dark);margin-bottom:8px;font-weight:500;}
+.sec-dark .sec-eyebrow{color:var(--gold);}
+.sec-title{font-family:'Playfair Display',serif;font-size:36px;color:var(--ink);margin-bottom:40px;line-height:1.2;}
+.sec-dark .sec-title{color:var(--white);}
+.sec-sub{font-size:15px;color:var(--muted);line-height:1.75;max-width:560px;margin-bottom:40px;}
+
+/* ── HOW IT WORKS ── */
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.step-card{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius);padding:24px;transition:transform .2s;}
+.step-card:hover{transform:translateY(-3px);}
+.step-num{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px;}
+.step-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px;}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* ── FEED ── */
+.feed-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.feed-filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.ff{background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.ff.on{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:500;}
+.feed-item{background:var(--ink-soft);border-radius:var(--radius);overflow:hidden;cursor:pointer;border:0.5px solid rgba(255,255,255,0.06);transition:transform .2s,border-color .2s;}
+.feed-item:hover{transform:translateY(-3px);border-color:rgba(201,168,76,0.3);}
+.feed-photo{aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:64px;background:var(--ink-mid);}
+.feed-meta{padding:12px 14px;}
+.feed-pct{font-size:18px;font-weight:500;color:var(--gold);}
+.feed-traits{font-size:11px;color:rgba(255,255,255,0.38);margin-top:3px;line-height:1.5;}
+.feed-bar{height:2px;background:rgba(255,255,255,0.07);border-radius:1px;margin-top:10px;overflow:hidden;}
+.feed-fill{height:100%;background:var(--gold);border-radius:1px;}
+
+/* ── REFINE ── */
+.refine-layout{display:grid;grid-template-columns:1fr 1.2fr;gap:32px;align-items:start;}
+.refine-panel{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--cream-mid);padding:24px;}
+.refine-tag{display:inline-flex;align-items:center;gap:5px;background:var(--amber-bg);color:var(--amber);font-size:10px;padding:4px 10px;border-radius:20px;margin-bottom:12px;font-weight:500;letter-spacing:.5px;}
+.match-base{background:var(--ink);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.mb-ava{width:48px;height:48px;border-radius:50%;background:var(--ink-mid);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.mb-id{font-size:11px;color:rgba(255,255,255,0.4);}
+.mb-pct{font-size:22px;font-weight:500;color:var(--gold);}
+.mb-traits{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.fg-label{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.3px;margin:16px 0 10px;padding-bottom:6px;border-bottom:0.5px solid var(--cream-dark);}
+.fr-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.fr-name{font-size:12px;color:var(--ink);min-width:110px;flex-shrink:0;}
+.fr-slider{display:flex;align-items:center;gap:7px;flex:1;}
+.fr-end{font-size:10px;color:var(--muted);min-width:52px;line-height:1.3;}
+.fr-end.l{text-align:right;}
+.fr-end.r{text-align:left;}
+.fr-slider input[type=range]{flex:1;accent-color:var(--gold);}
+.fr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--cream-mid);transition:background .2s;}
+.fr-dot.on{background:var(--gold);}
+.imp-bar{display:flex;align-items:center;gap:8px;margin:14px 0;padding:9px 12px;background:var(--cream);border-radius:var(--radius-sm);}
+.imp-lbl{font-size:11px;color:var(--muted);min-width:80px;}
+.ic{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid var(--cream-mid);background:var(--white);color:var(--muted);cursor:pointer;transition:all .15s;}
+.ic.on{background:var(--ink);color:var(--white);border-color:var(--ink);}
+.btn-search{width:100%;background:var(--ink);color:var(--white);border:none;border-radius:var(--radius-sm);padding:13px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;transition:opacity .2s;}
+.btn-search:hover{opacity:.8;}
+.btn-reset-s{width:100%;background:none;border:0.5px solid var(--cream-mid);color:var(--muted);border-radius:var(--radius-sm);padding:10px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.result-box{background:var(--cream);border-radius:var(--radius-sm);padding:16px;margin-top:14px;display:none;}
+.result-box.show{display:block;}
+.result-heading{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.rc{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:9px;padding:10px;text-align:center;cursor:pointer;transition:border-color .15s;}
+.rc.top{border-color:var(--gold);border-width:1.5px;}
+.rc:hover{border-color:var(--gold);}
+.rc-ava{font-size:28px;margin-bottom:5px;}
+.rc-pct{font-size:15px;font-weight:500;color:var(--ink);}
+.rc-delta{font-size:10px;color:var(--teal);margin-top:2px;}
+.rc-id{font-size:10px;color:var(--muted);}
+
+/* ── CHAT / MATCH FLOW ── */
+.flow-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.flow-card{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--cream-mid);padding:24px;position:relative;}
+.flow-card::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px;z-index:1;}
+.flow-card:last-child::after{display:none;}
+.flow-num{font-family:'Playfair Display',serif;font-size:36px;color:var(--cream-mid);margin-bottom:8px;line-height:1;}
+.flow-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;}
+.flow-desc{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* ── PRIVACY ── */
+.priv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.priv-card{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--cream-mid);padding:22px;display:flex;gap:14px;align-items:flex-start;}
+.priv-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.priv-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+.priv-desc{font-size:12px;color:var(--muted);line-height:1.65;}
+
+/* ── PRICING ── */
+.price-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.pc{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:16px;padding:28px;}
+.pc.feat{background:var(--ink);border-color:var(--gold);}
+.pc-tier{font-size:10px;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px;font-weight:500;}
+.pc.feat .pc-tier{color:var(--gold);}
+.pc-amt{font-family:'Playfair Display',serif;font-size:40px;color:var(--ink);margin-bottom:2px;line-height:1;}
+.pc.feat .pc-amt{color:var(--white);}
+.pc-period{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.pc.feat .pc-period{color:rgba(255,255,255,0.35);}
+.pc-feat{font-size:12px;color:var(--muted);display:flex;align-items:flex-start;gap:6px;margin-bottom:9px;line-height:1.5;}
+.pc.feat .pc-feat{color:rgba(255,255,255,0.5);}
+.pc-check{color:var(--teal);font-size:14px;flex-shrink:0;}
+.pc.feat .pc-check{color:var(--gold);}
+.btn-pc{width:100%;border-radius:10px;padding:12px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:16px;border:none;transition:opacity .2s;}
+.btn-pc:hover{opacity:.85;}
+.btn-pc.light{background:var(--cream-dark);color:var(--ink);}
+.btn-pc.dark{background:var(--gold);color:var(--ink);}
+
+/* ── FAQ ── */
+.faq-list{max-width:720px;}
+.faq-item{border-bottom:0.5px solid var(--cream-mid);padding:18px 0;}
+.faq-q{font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.faq-q i{font-size:18px;color:var(--muted);transition:transform .3s;flex-shrink:0;}
+.faq-a{font-size:13px;color:var(--muted);line-height:1.75;margin-top:12px;display:none;}
+.faq-item.open .faq-a{display:block;}
+.faq-item.open .faq-q i{transform:rotate(45deg);}
+
+/* ── LEGAL MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:16px;max-width:680px;width:100%;max-height:80vh;overflow-y:auto;padding:32px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:0.5px solid var(--cream-mid);}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);padding:0;}
+.modal h3{font-size:14px;font-weight:500;color:var(--ink);margin:20px 0 8px;}
+.modal p,.modal li{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:8px;}
+.modal ul{padding-left:18px;}
+
+/* ── REGISTER MODAL ── */
+.reg-modal{background:var(--white);border-radius:16px;max-width:440px;width:100%;padding:32px;}
+.reg-logo{font-family:'Playfair Display',serif;font-size:18px;color:var(--ink);letter-spacing:2px;margin-bottom:24px;}
+.reg-logo em{color:var(--gold);font-style:normal;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.field input{width:100%;border:0.5px solid var(--cream-mid);border-radius:8px;padding:10px 13px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;transition:border-color .2s;background:var(--white);}
+.field input:focus{border-color:var(--gold);}
+.consent{background:var(--cream);border-radius:8px;padding:12px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted);line-height:1.6;}
+.consent input{accent-color:var(--gold);margin-top:2px;flex-shrink:0;}
+.consent a{color:var(--ink);text-decoration:underline;cursor:pointer;}
+.btn-reg{width:100%;background:var(--ink);color:var(--white);border:none;border-radius:9px;padding:13px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-bottom:12px;transition:opacity .2s;}
+.btn-reg:hover{opacity:.8;}
+.btn-social-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.btn-soc{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:9px;padding:10px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink);}
+.divider-or{text-align:center;font-size:11px;color:var(--muted);margin:12px 0;position:relative;}
+.divider-or::before,.divider-or::after{content:'';position:absolute;top:50%;width:calc(50% - 20px);height:.5px;background:var(--cream-mid);}
+.divider-or::before{left:0;}
+.divider-or::after{right:0;}
+.login-link{text-align:center;font-size:12px;color:var(--muted);}
+.login-link a{color:var(--ink);text-decoration:underline;cursor:pointer;}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);padding:48px 40px 32px;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:40px;}
+.footer-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);letter-spacing:3px;margin-bottom:12px;}
+.footer-logo span{color:rgba(255,255,255,0.25);}
+.footer-tagline{font-size:13px;color:rgba(255,255,255,0.35);line-height:1.7;max-width:240px;}
+.footer-col-title{font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);letter-spacing:.5px;margin-bottom:14px;}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,0.3);text-decoration:none;margin-bottom:8px;cursor:pointer;transition:color .2s;}
+.footer-col a:hover{color:var(--gold);}
+.footer-bottom{border-top:0.5px solid rgba(255,255,255,0.08);padding-top:24px;display:flex;align-items:center;justify-content:space-between;}
+.footer-copy{font-size:11px;color:rgba(255,255,255,0.2);}
+.footer-legal{display:flex;gap:20px;}
+.footer-legal a{font-size:11px;color:rgba(255,255,255,0.25);cursor:pointer;text-decoration:none;transition:color .2s;}
+.footer-legal a:hover{color:var(--gold);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--white);padding:12px 20px;border-radius:9px;font-size:13px;border-left:3px solid var(--gold);z-index:300;display:none;animation:slideIn .3s ease;}
+.toast.show{display:block;}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+
+/* RTL support for Arabic */
+html[dir="rtl"] nav { flex-direction: row-reverse; }
+html[dir="rtl"] .nav-links { flex-direction: row-reverse; }
+html[dir="rtl"] .hero { flex-direction: row-reverse; }
+html[dir="rtl"] body { font-family: 'DM Sans', 'Noto Sans Arabic', sans-serif; }
+
+/* ── REPORT BUTTON ── */
+.report-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.5);border:none;border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,0.6);font-size:13px;opacity:0;transition:opacity .2s;}
+.feed-item:hover .report-btn{opacity:1;}
+.report-btn:hover{background:rgba(226,75,74,0.8);color:#fff;}
+
+/* ── REPORT MODAL ── */
+.report-modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;padding:20px;}
+.report-modal-wrap.open{display:flex;}
+.report-modal{background:var(--white);border-radius:16px;max-width:400px;width:100%;padding:24px;}
+.report-modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--ink);margin-bottom:6px;}
+.report-modal-sub{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
+.report-options{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.report-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px solid var(--cream-mid);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--ink);transition:background .15s;}
+.report-option:hover{background:var(--cream-dark);}
+.report-option input{accent-color:var(--gold);}
+.btn-report-send{width:100%;background:var(--ink);color:var(--white);border:none;border-radius:9px;padding:12px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-bottom:8px;transition:opacity .2s;}
+.btn-report-send:hover{opacity:.8;}
+.btn-report-cancel{width:100%;background:none;border:0.5px solid var(--cream-mid);color:var(--muted);border-radius:9px;padding:10px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+
+/* ── GOOGLE TRANSLATE ── */
+#google_translate_element { display:inline-flex; align-items:center; }
+#google_translate_element select {
+  background: rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: var(--font-sans, "DM Sans", sans-serif);
+  cursor: pointer;
+  outline: none;
+}
+/* Nasconde il banner in alto di Google Translate */
+.goog-te-banner-frame { display:none !important; }
+body { top: 0 !important; }
+.goog-te-gadget { color: transparent !important; font-size: 0 !important; }
+.goog-te-gadget select { font-size: 12px !important; color: rgba(255,255,255,0.7) !important; }
+.goog-logo-link { display:none !important; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .hero{flex-direction:column;padding:48px 20px 40px;}
+  .hero-right{display:none;}
+  .steps-grid,.feed-grid,.flow-steps,.price-grid{grid-template-columns:1fr 1fr;}
+  .refine-layout{grid-template-columns:1fr;}
+  .priv-grid{grid-template-columns:1fr;}
+  nav{padding:12px 20px;}
+  .nav-links{gap:14px;}
+  .sec,.sec-dark,.sec-alt{padding:48px 20px;}
+  footer{padding:40px 20px 24px;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .steps-grid,.flow-steps,.price-grid,.feed-grid{grid-template-columns:1fr;}
+  .hero-title{font-size:36px;}
+  .footer-top{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">MY <span>TWINS</span></a>
+  <div class="nav-links">
+    <a class="nav-link" href="#come-funziona">How it works</a>
+    <a class="nav-link" href="#affina">Refine twin</a>
+    <a class="nav-link" href="#radar">Twin Radar</a>
+    <a class="nav-link" href="#privacy">Privacy</a>
+    <a class="nav-link" href="#prezzi">Pricing</a>
+    <a class="nav-link" href="#faq">FAQ</a>
+    <div id="google_translate_element"></div>
+    <button class="nav-cta" onclick="window.location.href='mytwins_auth.html'">Sign up free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow" data-i18n="hero_eyebrow">YOUR IDENTITY IN THE WORLD</div>
+    <h1 class="hero-title">Your lookalike<br>really exists.<br><em>Find them.</em></h1>
+    <p class="hero-sub" data-i18n="hero_sub">MY TWINS helps you find someone who looks just like you — safely, anonymously and consensually. No biometric data. Just your perception.</p>
+    <div class="hero-btns">
+      <button class="btn-hp" onclick="window.location.href='mytwins_auth.html'" data-i18n="btn_signup">Create your profile — it's free</button>
+      <button class="btn-hs" onclick="document.getElementById('come-funziona').scrollIntoView({behavior:'smooth'})" data-i18n="btn_howto">How it works</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hstat-num">14.800+</div><div class="hstat-lbl" data-i18n="stat_users">Registered users</div></div>
+      <div><div class="hstat-num">1.240</div><div class="hstat-lbl" data-i18n="stat_matches">Confirmed matches</div></div>
+      <div><div class="hstat-num">12</div><div class="hstat-lbl" data-i18n="stat_langs">Languages</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-card-stack">
+      <div class="hcard"><div class="hc-ava">👩</div><div class="hc-id">User #4821</div><div class="hc-pct">91%</div><div class="hc-bar"><div class="hc-fill" style="width:91%"></div></div></div>
+      <div class="hcard"><div class="hc-ava">🧑</div><div class="hc-id">User #7203</div><div class="hc-pct">87%</div><div class="hc-bar"><div class="hc-fill" style="width:87%"></div></div></div>
+      <div class="hcard"><div class="hc-ava">👨</div><div class="hc-id">User #2948</div><div class="hc-pct">83%</div><div class="hc-bar"><div class="hc-fill" style="width:83%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="sec" id="come-funziona">
+  <div class="sec-eyebrow" data-i18n="how_eyebrow">HOW IT WORKS</div>
+  <div class="sec-title" data-i18n="how_title">Four steps to your twin</div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num" style="background:var(--teal-bg);color:var(--teal-dark)"><i class="ti ti-user-plus" style="font-size:17px"></i></div>
+      <div class="step-title" data-i18n="step1_title">Create your profile</div>
+      <div class="step-desc" data-i18n="step1_desc">Upload a photo and describe your physical features: ethnicity, eye colour, hair, face shape, build, height and distinguishing marks.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:var(--purple-bg);color:var(--purple)"><i class="ti ti-layout-grid" style="font-size:17px"></i></div>
+      <div class="step-title" data-i18n="step2_title">Browse the feed</div>
+      <div class="step-desc" data-i18n="step2_desc">Browse profiles of people with similar features. See photos, similarity percentage and common traits.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:var(--amber-bg);color:var(--amber)"><i class="ti ti-adjustments-horizontal" style="font-size:17px"></i></div>
+      <div class="step-title" data-i18n="step3_title">Refine your ideal twin</div>
+      <div class="step-desc" data-i18n="step3_desc">Use sliders to describe the exact facial features you're looking for: eye distance, eyebrows, nose, lips, cheekbones and much more.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:#FAF0D0;color:var(--gold-dark)"><i class="ti ti-message-circle" style="font-size:17px"></i></div>
+      <div class="step-title" data-i18n="step4_title">Chat anonymously</div>
+      <div class="step-desc" data-i18n="step4_desc">Found your twin? Send them a message in anonymous chat. If they want too, exchange contacts directly — free and independent.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEED -->
+<section class="sec-dark">
+  <div class="sec-eyebrow" data-i18n="feed_eyebrow">THE FEED</div>
+  <div class="sec-title" data-i18n="feed_title">Browse profiles — find your twin</div>
+  <div class="feed-filters">
+    <button class="ff on" onclick="setFilter(this)">For you</button>
+    <button class="ff" onclick="setFilter(this)">Top match</button>
+    <button class="ff" onclick="setFilter(this)">Global</button>
+    <button class="ff" onclick="setFilter(this)">Nearby</button>
+    <button class="ff" onclick="setFilter(this)">New</button>
+  </div>
+  <div class="feed-grid">
+    <div class="feed-item" style="position:relative"><div class="feed-photo">👩</div><div class="feed-meta"><div class="feed-pct">91%</div><div class="feed-traits">Green eyes · Brown hair · Oval face · Freckles</div><div class="feed-bar"><div class="feed-fill" style="width:91%"></div></div></div><button class="report-btn" onclick="reportProfile(event,'#4821')" aria-label="Segnala profilo"><i class="ti ti-flag" aria-hidden="true"></i></button></div>
+    <div class="feed-item" style="position:relative"><div class="feed-photo">👨</div><div class="feed-meta"><div class="feed-pct">87%</div><div class="feed-traits">Hazel eyes · Medium build · 180 cm · Cheekbones</div><div class="feed-bar"><div class="feed-fill" style="width:87%"></div></div></div><button class="report-btn" onclick="reportProfile(event,'#7203')" aria-label="Segnala profilo"><i class="ti ti-flag" aria-hidden="true"></i></button></div>
+    <div class="feed-item" style="position:relative"><div class="feed-photo">🧑</div><div class="feed-meta"><div class="feed-pct">83%</div><div class="feed-traits">Brown hair · Freckles · Oval face · 172 cm</div><div class="feed-bar"><div class="feed-fill" style="width:83%"></div></div></div><button class="report-btn" onclick="reportProfile(event,'#2948')" aria-label="Segnala profilo"><i class="ti ti-flag" aria-hidden="true"></i></button></div>
+    <div class="feed-item" style="position:relative"><div class="feed-photo">👱</div><div class="feed-meta"><div class="feed-pct">79%</div><div class="feed-traits">Green eyes · Blonde hair · Dimples · Wide forehead</div><div class="feed-bar"><div class="feed-fill" style="width:79%"></div></div></div><button class="report-btn" onclick="reportProfile(event,'#5512')" aria-label="Segnala profilo"><i class="ti ti-flag" aria-hidden="true"></i></button></div>
+  </div>
+</section>
+
+<!-- AFFINA -->
+<section class="sec-alt" id="affina">
+  <div class="sec-eyebrow">EXCLUSIVE FEATURE</div>
+  <div class="sec-title">Refine your ideal twin</div>
+  <div class="refine-layout">
+    <div>
+      <div class="refine-tag"><i class="ti ti-sparkles" style="font-size:12px"></i> MY TWINS Exclusive</div>
+      <p style="font-size:16px;font-weight:500;color:var(--ink);margin-bottom:10px;line-height:1.4;">The perfect match is in the details.</p>
+      <p style="font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:24px;">Finding someone with the same eyes is not enough. Your ideal twin has precise characteristics only you know. With refinement sliders you can describe exactly what you're looking for — and MY TWINS finds who comes closest among all members.</p>
+      <div class="match-base">
+        <div class="mb-ava">👩</div>
+        <div>
+          <div class="mb-id">Starting from: User #4821</div>
+          <div class="mb-pct">91%</div>
+          <div class="mb-traits">Green eyes · Brown hair · Oval face · Freckles</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted);line-height:1.6;background:var(--white);padding:12px;border-radius:8px;">
+        <i class="ti ti-info-circle" style="color:var(--gold);font-size:16px;flex-shrink:0;margin-top:1px"></i>
+        Sliders do not modify your public profile. They are only used to refine your search. No biometric data required or processed.
+      </div>
+    </div>
+    <div class="refine-panel">
+      <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:16px;">Facial features to look for</div>
+      <div class="fg-label"><i class="ti ti-eye" style="font-size:12px;vertical-align:-1px;margin-right:3px"></i> Eyes</div>
+      <div class="fr-row"><div class="fr-name">Eye distance</div><div class="fr-slider"><div class="fr-end l">Close-set</div><input type="range" min="1" max="5" value="3" step="1" id="s-eye-d" oninput="sv('s-eye-d')"><div class="fr-end r">Wide-set</div></div><div class="fr-dot" id="d-s-eye-d"></div></div>
+      <div class="fr-row"><div class="fr-name">Eyebrows</div><div class="fr-slider"><div class="fr-end l">Thin</div><input type="range" min="1" max="5" value="3" step="1" id="s-brows" oninput="sv('s-brows')"><div class="fr-end r">Thick</div></div><div class="fr-dot" id="d-s-brows"></div></div>
+      <div class="fr-row"><div class="fr-name">Eye shape</div><div class="fr-slider"><div class="fr-end l">Round</div><input type="range" min="1" max="5" value="3" step="1" id="s-eye-sh" oninput="sv('s-eye-sh')"><div class="fr-end r">Almond</div></div><div class="fr-dot" id="d-s-eye-sh"></div></div>
+      <div class="fg-label"><i class="ti ti-user" style="font-size:12px;vertical-align:-1px;margin-right:3px"></i> Nose</div>
+      <div class="fr-row"><div class="fr-name">Nose width</div><div class="fr-slider"><div class="fr-end l">Narrow</div><input type="range" min="1" max="5" value="3" step="1" id="s-nose-w" oninput="sv('s-nose-w')"><div class="fr-end r">Wide</div></div><div class="fr-dot" id="d-s-nose-w"></div></div>
+      <div class="fr-row"><div class="fr-name">Nose profile</div><div class="fr-slider"><div class="fr-end l">Snub</div><input type="range" min="1" max="5" value="3" step="1" id="s-nose-p" oninput="sv('s-nose-p')"><div class="fr-end r">Hooked</div></div><div class="fr-dot" id="d-s-nose-p"></div></div>
+      <div class="fg-label"><i class="ti ti-mood-smile" style="font-size:12px;vertical-align:-1px;margin-right:3px"></i> Mouth and chin</div>
+      <div class="fr-row"><div class="fr-name">Lips</div><div class="fr-slider"><div class="fr-end l">Thin</div><input type="range" min="1" max="5" value="3" step="1" id="s-lips" oninput="sv('s-lips')"><div class="fr-end r">Full</div></div><div class="fr-dot" id="d-s-lips"></div></div>
+      <div class="fr-row"><div class="fr-name">Chin</div><div class="fr-slider"><div class="fr-end l">Pointed</div><input type="range" min="1" max="5" value="3" step="1" id="s-chin" oninput="sv('s-chin')"><div class="fr-end r">Square</div></div><div class="fr-dot" id="d-s-chin"></div></div>
+      <div class="fg-label"><i class="ti ti-arrows-diagonal" style="font-size:12px;vertical-align:-1px;margin-right:3px"></i> Face structure</div>
+      <div class="fr-row"><div class="fr-name">Cheekbones</div><div class="fr-slider"><div class="fr-end l">Flat</div><input type="range" min="1" max="5" value="3" step="1" id="s-cheeks" oninput="sv('s-cheeks')"><div class="fr-end r">Prominent</div></div><div class="fr-dot" id="d-s-cheeks"></div></div>
+      <div class="fr-row"><div class="fr-name">Jaw</div><div class="fr-slider"><div class="fr-end l">Slim</div><input type="range" min="1" max="5" value="3" step="1" id="s-jaw" oninput="sv('s-jaw')"><div class="fr-end r">Strong</div></div><div class="fr-dot" id="d-s-jaw"></div></div>
+      <div class="imp-bar">
+        <div class="imp-lbl">Criteria weight</div>
+        <div style="display:flex;gap:5px;">
+          <div class="ic" onclick="setIc(this)">Low</div>
+          <div class="ic on" onclick="setIc(this)">Medium</div>
+          <div class="ic" onclick="setIc(this)">High</div>
+          <div class="ic" onclick="setIc(this)">Absolute</div>
+        </div>
+      </div>
+      <button class="btn-search" onclick="doRefineSearch()"><i class="ti ti-search"></i> Search twin with these criteria</button>
+      <button class="btn-reset-s" onclick="resetSliders()"><i class="ti ti-refresh" style="font-size:13px;vertical-align:-1px;margin-right:4px"></i> Reset</button>
+      <div class="result-box" id="refineResults">
+        <div class="result-heading"><i class="ti ti-sparkles" style="font-size:15px;color:var(--gold)"></i> New matches found</div>
+        <div class="result-grid" id="refineGrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MATCH FLOW -->
+<section class="sec">
+  <div class="sec-eyebrow">THE FLOW</div>
+  <div class="sec-title">From discovery to contact</div>
+  <div class="flow-steps">
+    <div class="flow-card">
+      <div class="flow-num">01</div>
+      <div class="flow-title">You find your twin</div>
+      <div class="flow-desc">Browsing the feed or using refinement sliders, you find someone who looks like you. You only see physical characteristics and profile photo — nothing else.</div>
+    </div>
+    <div class="flow-card">
+      <div class="flow-num">02</div>
+      <div class="flow-title">Anonymous chat</div>
+      <div class="flow-desc">You send a message in internal chat. The other user replies if they want. No personal data is visible — only anonymous nicknames until you decide otherwise.</div>
+    </div>
+    <div class="flow-card">
+      <div class="flow-num">03</div>
+      <div class="flow-title">You exchange contacts</div>
+      <div class="flow-desc">If you want to stay in touch, exchange emails or social media directly in chat. MY TWINS is not involved — you are completely free and independent from that moment.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TWIN RADAR -->
+<section class="sec-dark" id="radar">
+  <div class="sec-eyebrow">EXCLUSIVE FEATURE</div>
+  <div class="sec-title">Twin Radar — help others, help yourself</div>
+  <p style="font-family:'DM Sans',sans-serif;font-size:15px;color:rgba(255,255,255,0.55);line-height:1.75;max-width:600px;margin-bottom:32px;">
+    <em style="color:#C9A84C;font-style:normal;font-size:17px;">"If you help someone find their lookalike, someone might help you find yours."</em>
+  </p>
+  <div class="steps-grid">
+    <div class="step-card" style="background:#2A2420;border-color:rgba(255,255,255,0.06);">
+      <div class="step-num" style="background:rgba(201,168,76,0.15);color:#C9A84C"><i class="ti ti-eye" style="font-size:17px" aria-hidden="true"></i></div>
+      <div class="step-title" style="color:#fff">Spot a similar pair</div>
+      <div class="step-desc">Browsing the feed you notice two users look very similar — even though neither of them knows it yet.</div>
+    </div>
+    <div class="step-card" style="background:#2A2420;border-color:rgba(255,255,255,0.06);">
+      <div class="step-num" style="background:rgba(201,168,76,0.15);color:#C9A84C"><i class="ti ti-send" style="font-size:17px" aria-hidden="true"></i></div>
+      <div class="step-title" style="color:#fff">Signal to MY TWINS</div>
+      <div class="step-desc">With one tap you select the two profiles and flag them as potential lookalikes. The system does the rest automatically.</div>
+    </div>
+    <div class="step-card" style="background:#2A2420;border-color:rgba(255,255,255,0.06);">
+      <div class="step-num" style="background:rgba(201,168,76,0.15);color:#C9A84C"><i class="ti ti-mail" style="font-size:17px" aria-hidden="true"></i></div>
+      <div class="step-title" style="color:#fff">They get notified</div>
+      <div class="step-desc">MY TWINS alerts both users anonymously. The person who flagged them always remains unknown.</div>
+    </div>
+    <div class="step-card" style="background:#2A2420;border-color:rgba(255,255,255,0.06);">
+      <div class="step-num" style="background:#C9A84C;color:#1A1614"><i class="ti ti-trophy" style="font-size:17px" aria-hidden="true"></i></div>
+      <div class="step-title" style="color:#fff">Earn Radar points</div>
+      <div class="step-desc">Every signal that leads to a confirmed match earns you points. Climb the leaderboard and unlock exclusive rewards.</div>
+    </div>
+  </div>
+  <div style="margin-top:24px;background:#2A2420;border-radius:12px;padding:20px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
+    <div style="text-align:center;flex:1;min-width:80px;">
+      <div style="font-family:'Playfair Display',serif;font-size:28px;color:#C9A84C;">10</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">points per signal</div>
+    </div>
+    <div style="text-align:center;flex:1;min-width:80px;">
+      <div style="font-family:'Playfair Display',serif;font-size:28px;color:#C9A84C;">+40</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">bonus confirmed match</div>
+    </div>
+    <div style="text-align:center;flex:1;min-width:80px;">
+      <div style="font-family:'Playfair Display',serif;font-size:28px;color:#C9A84C;">500</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">points = 1 year Premium free</div>
+    </div>
+    <div style="text-align:center;flex:1;min-width:80px;">
+      <div style="font-family:'Playfair Display',serif;font-size:28px;color:#C9A84C;">5</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">max signals per day</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<section class="sec-alt" id="privacy">
+  <div class="sec-eyebrow">PRIVACY & SECURITY</div>
+  <div class="sec-title">Your identity is always protected</div>
+  <div class="priv-grid">
+    <div class="priv-card"><div class="priv-icon" style="background:var(--teal-bg)"><i class="ti ti-shield-check" style="font-size:18px;color:var(--teal-dark)"></i></div><div><div class="priv-title">No biometric data</div><div class="priv-desc">Photos are uploaded voluntarily and are not analyzed by algorithms. The comparison is visual and subjective — done by the user, not the system.</div></div></div>
+    <div class="priv-card"><div class="priv-icon" style="background:var(--purple-bg)"><i class="ti ti-user-off" style="font-size:18px;color:var(--purple)"></i></div><div><div class="priv-title">Total anonymity</div><div class="priv-desc">Your name, email and personal data are never visible to other users. You are identified only by an anonymous number until you choose to reveal yourself.</div></div></div>
+    <div class="priv-card"><div class="priv-icon" style="background:var(--amber-bg)"><i class="ti ti-lock" style="font-size:18px;color:var(--amber)"></i></div><div><div class="priv-title">Encrypted chat</div><div class="priv-desc">Internal messages are accessible only to conversation participants. MY TWINS does not read or share chat content with third parties.</div></div></div>
+    <div class="priv-card"><div class="priv-icon" style="background:var(--cream-mid)"><i class="ti ti-trash" style="font-size:18px;color:var(--muted)"></i></div><div><div class="priv-title">Delete anytime</div><div class="priv-desc">You can delete your account and all associated data at any time, directly from profile settings. No questions, no waiting.</div></div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec" id="prezzi">
+  <div class="sec-eyebrow">PLANS</div>
+  <div class="sec-title">Simple and transparent</div>
+  <div class="price-grid">
+    <div class="pc">
+      <div class="pc-tier">FREE</div>
+      <div class="pc-amt">$0</div>
+      <div class="pc-period">forever</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Profilo con foto e caratteristiche</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Feed fotografico completo</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Twin refinement con cursori</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Chat interna anonima</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>3 messages per day</div>
+      <button class="btn-pc light" onclick="window.location.href='mytwins_auth.html'">Start free</button>
+    </div>
+    <div class="pc feat">
+      <div class="pc-tier">PREMIUM</div>
+      <div class="pc-amt">$29</div>
+      <div class="pc-period">per year · approx. $2.40/month</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Everything in free plan</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Unlimited chat messages</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Email alerts for new matches</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Priority in others' feed</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Refinement saved to profile</div>
+      <button class="btn-pc dark" onclick="showToast('Choose method: Stripe or PayPal — available at launch!')"><i class="ti ti-credit-card" style="font-size:14px;vertical-align:-2px;margin-right:5px"></i> Stripe &nbsp;·&nbsp; <i class="ti ti-brand-paypal" style="font-size:14px;vertical-align:-2px;margin-right:3px"></i> PayPal</button>
+    </div>
+    <div class="pc">
+      <div class="pc-tier">ANNUAL PREMIUM</div>
+      <div class="pc-amt">$19</div>
+      <div class="pc-period">first year · launch offer</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Everything in Premium plan</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>"Early Adopter" badge on profile</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Early access to new features</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Priority support</div>
+      <div class="pc-feat"><span class="pc-check"><i class="ti ti-check"></i></span>Discount renewed in year 2</div>
+      <button class="btn-pc light" onclick="showToast('Launch offer — coming soon!')">Reserve offer</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec-alt" id="faq">
+  <div class="sec-eyebrow">FREQUENTLY ASKED QUESTIONS</div>
+  <div class="sec-title">Everything you want to know</div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Does MY TWINS use facial recognition?<i class="ti ti-plus"></i></div>
+      <div class="faq-a">No. MY TWINS does not automatically analyse or process photos. Images are voluntarily uploaded by users and visible only to other registered members. The comparison is visual and subjective — done by the user themselves, exactly like any social network.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Is my personal data safe?<i class="ti ti-plus"></i></div>
+      <div class="faq-a">Yes. Your name and email are never visible to other users. You are identified by an anonymous number. Data is not sold to third parties. You can delete your account and all your data at any time from settings.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Does the photo have to be real?<i class="ti ti-plus"></i></div>
+      <div class="faq-a">MY TWINS does not verify the authenticity of photos — exactly like any other social network. It is the user's responsibility to upload truthful images. The matching system is based on self-declared physical characteristics, not on image analysis.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">How does the anonymous chat work?<i class="ti ti-plus"></i></div>
+      <div class="faq-a">MY TWINS internal chat allows two users to communicate using only their anonymous nicknames. Neither can see the other's email or personal data. If you decide to exchange contacts, you do so freely within the chat — MY TWINS is not involved and bears no responsibility for that communication.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What if someone harasses me in chat?<i class="ti ti-plus"></i></div>
+      <div class="faq-a">You can block and report any user at any time. MY TWINS will moderate reports and may suspend or ban accounts that violate usage rules. Community safety is a priority.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Can I delete my account?<i class="ti ti-plus"></i></div>
+      <div class="faq-a">Yes, at any time with no waiting. Go to profile settings, click "Delete account" and all your data — photos, characteristics, messages — will be permanently deleted within 30 days.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Do the refinement sliders change my profile?<i class="ti ti-plus"></i></div>
+      <div class="faq-a">No. The refinement sliders are only used to refine your search for the ideal twin — they do not modify your public profile or the characteristics others see on you in any way.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">MY <span>TWINS</span></div>
+      <div class="footer-tagline">The first platform to find your physical lookalike in the world — safely, anonymously and consensually.</div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">PRODUCT</div>
+      <a onclick="document.getElementById('come-funziona').scrollIntoView({behavior:'smooth'})">How it works</a>
+      <a onclick="document.getElementById('affina').scrollIntoView({behavior:'smooth'})">Refine twin</a>
+      <a onclick="document.getElementById('prezzi').scrollIntoView({behavior:'smooth'})">Pricing</a>
+      <a onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">LEGAL</div>
+      <a onclick="openModal('privacy-modal')">Privacy Policy</a>
+      <a onclick="openModal('terms-modal')">Terms of Service</a>
+      <a onclick="openModal('cookie-modal')">Cookie Policy</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">CONTACT</div>
+      <a href="#" onclick="showToast('Email to be configured before launch')">[ inserisci la tua email ]</a><br><a href="mailto:abuse@mytwins.app" style="color:rgba(255,255,255,0.3);font-size:12px;">abuse@mytwins.app</a>
+      <a onclick="showToast('Instagram — coming soon!')">Instagram</a>
+      <a onclick="showToast('TikTok — coming soon!')">TikTok</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 MY TWINS — BC1024766 Ltd. — All rights reserved</div>
+    <div class="footer-legal">
+      <a onclick="openModal('privacy-modal')">Privacy Policy</a>
+      <a onclick="openModal('terms-modal')">Terms of Service</a>
+      <a onclick="openModal('cookie-modal')">Cookie</a>
+    </div>
+  </div>
+</footer>
+
+<!-- PRIVACY MODAL -->
+<div class="modal-overlay" id="privacy-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Privacy Policy</div>
+      <button class="modal-close" onclick="closeModal('privacy-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <p><strong>Last updated: May 2026</strong></p>
+    <h3>1. Who we are</h3>
+    <p>MY TWINS is an online platform that allows users to find people who look physically similar to them. The data controller is <strong>BC1024766 Ltd.</strong>, società registrata in British Columbia, Canada. Per gli utenti residenti in Europa si applicano le disposizioni del Regolamento GDPR (UE) 2016/679. Contact: [ inserisci la tua email ].</p>
+    <h3>2. Data we collect</h3>
+    <ul>
+      <li>Email address (for account access)</li>
+      <li>Profile photo (voluntarily uploaded by the user)</li>
+      <li>Self-declared physical characteristics (ethnicity, eye colour, hair, etc.)</li>
+      <li>Messages exchanged in internal chat</li>
+      <li>Technical browsing data (logs, IP address)</li>
+    </ul>
+    <h3>3. How we use your data</h3>
+    <p>Data is used exclusively to: provide the MY TWINS service, display your profile to other registered users, calculate the similarity percentage between profiles, send service notifications by email (Premium users only).</p>
+    <h3>4. Photos and biometric data</h3>
+    <p>Photos uploaded by users are not analysed, processed or used for facial recognition. MY TWINS does not process biometric data. Profile comparison is based on user self-declared characteristics, not on automatic image analysis.</p>
+    <h3>5. Photos and user content</h3>
+    <p>Photos uploaded by users are their sole responsibility. By uploading a photo, the user explicitly declares that: (a) the photo portrays them personally; (b) they have the right to publish it; (c) it does not portray anyone under 18 years of age; (d) it does not violate any third party rights. BC1024766 Ltd. does not verify the authenticity of photos but reserves the right to remove them upon motivated report. To report inappropriate content: <strong>abuse@mytwins.app</strong></p>
+    <h3>6. Who we share data with</h3>
+    <p>MY TWINS does not sell or transfer personal data to third parties. Technical data may be processed by infrastructure providers (hosting, email) acting as data processors in compliance with GDPR. Payments are managed by Stripe Inc. and PayPal Holdings, Inc. — subject to their respective privacy policies. MY TWINS does not store credit card data.</p>
+    <h3>6. Your rights</h3>
+    <p>Hai diritto di accedere ai tuoi dati, correggerli, cancellarli, limitarne il trattamento e portarli altrove. Per esercitare questi diritti scrivi a [email da inserire]. Puoi cancellare il tuo account in qualsiasi momento dalle impostazioni.</p>
+    <h3>7. Data retention</h3>
+    <p>Data is retained for the duration of the account and deleted within 30 days of a deletion request.</p>
+    <h3>8. Contact</h3>
+    <p>For any privacy questions: [email da inserire]</p>
+  </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="modal-overlay" id="terms-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Terms of Service</div>
+      <button class="modal-close" onclick="closeModal('terms-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <p><strong>Last updated: May 2026</strong></p>
+    <h3>1. The service</h3>
+    <p>MY TWINS is an online platform that allows registered users to publish a profile with photos and physical characteristics, browse other users' profiles and communicate via anonymous internal chat. MY TWINS does not verify the identity of users or the authenticity of uploaded photos.</p>
+    <h3>2. Registration</h3>
+    <p>To register you must be at least 18 years old and provide a valid email address. The user is responsible for the security of their account and all activities carried out with it.</p>
+    <h3>3. Published content and photo declaration</h3>
+    <p>The user is solely responsible for the photos and information they publish. By uploading a photo, the user declares under their own responsibility that: (a) the photo portrays them personally; (b) they have the full right to publish it; (c) the photo does not portray anyone under 18 years of age; (d) it does not violate the privacy or image rights of third parties. Publishing photos of other people without their explicit consent, offensive, illegal content or content that violates third party rights is prohibited. BC1024766 Ltd. reserves the right to remove content that violates these rules and to suspend responsible accounts. To report: abuse@mytwins.app</p>
+    <h3>4. Chat, messages, videos and video calls</h3>
+    <p>MY TWINS provides internal chat, photo/video messaging and video calling tools to facilitate contact between matched users. These features are available only after mutual match confirmation by both users.</p>
+    <p>By using these features, users explicitly agree that: (a) they are solely responsible for all content they send; (b) they will not send illegal, offensive, non-consensual intimate content or content involving minors; (c) video calls are peer-to-peer and are not recorded or stored by MY TWINS; (d) photo and video messages may be stored temporarily to enable delivery and will be deleted within 30 days.</p>
+    <p>MY TWINS is not responsible for the content exchanged between users. Any abuse must be reported immediately to abuse@mytwins.app. MY TWINS will act promptly on all reports and may suspend or permanently ban accounts that violate these rules.</p>
+    <h3>5. Hobbies, character and personal data</h3>
+    <p>Users may optionally add hobbies, interests and a personal character description to their profile. This information is private by default and only visible to other users after mutual match confirmation. By adding this information, users confirm it is truthful and does not violate any third party rights. MY TWINS does not verify the accuracy of this information.</p>
+    <h3>6. Limitation of liability</h3>
+    <p>MY TWINS is a physical lookalike platform based on self-declarations. It does not guarantee the truthfulness of information published by users. MY TWINS is not responsible for any damages arising from relationships between users who met through the platform.</p>
+    <h3>7. Premium plan</h3>
+    <p>The Premium plan is a paid subscription with annual renewal. You can cancel automatic renewal at any time from settings. No refunds are provided for the period already paid.</p>
+    <h3>8. Account deletion</h3>
+    <p>You can delete your account at any time from settings. All data will be deleted within 30 days. MY TWINS may suspend or delete accounts that violate these terms.</p>
+    <h3>9. Applicable law</h3>
+    <p>MY TWINS is managed by <strong>BC1024766 Ltd.</strong>, a company registered in British Columbia, Canada. These terms are governed by the laws of British Columbia and applicable Canadian federal laws. For European users, the provisions of GDPR (EU) 2016/679 apply and disputes shall be resolved before the court of the consumer user's place of residence. Payments are managed via Stripe and PayPal, each subject to their own terms of use.</p>
+    <h3>9. Contact</h3>
+    <p>For any questions: [email da inserire]</p>
+  </div>
+</div>
+
+<!-- COOKIE MODAL -->
+<div class="modal-overlay" id="cookie-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Cookie Policy</div>
+      <button class="modal-close" onclick="closeModal('cookie-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <h3>Technical cookies (necessary)</h3>
+    <p>BC1024766 Ltd. (MY TWINS) uses only strictly necessary technical cookies for the site to function: login session, language preferences. No profiling or advertising tracking cookies are used.</p>
+    <h3>Third-party cookies</h3>
+    <p>If we use external services (e.g. payment processor), these may set their own cookies according to their respective privacy policies. We do not integrate Google Analytics or Meta Pixel.</p>
+    <h3>How to manage cookies</h3>
+    <p>You can disable cookies from your browser, but some site features may not be available. MY TWINS does not use cookies for advertising purposes — MY TWINS products are ad-free.</p>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-overlay" id="reg-modal">
+  <div class="reg-modal">
+    <div class="reg-logo">MY <em>TWINS</em></div>
+    <div class="btn-social-row">
+      <button class="btn-soc"><i class="ti ti-brand-google" style="font-size:16px"></i> Google</button>
+      <button class="btn-soc"><i class="ti ti-brand-apple" style="font-size:16px"></i> Apple</button>
+    </div>
+    <div class="divider-or">or with email</div>
+    <div class="field"><label>Name</label><input type="text" placeholder="John"></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="john@email.com"></div>
+    <div class="field"><label>Password</label><input type="password" placeholder="Minimum 8 characters"></div>
+    <div class="consent">
+      <input type="checkbox" id="c1">
+      <label for="c1">I consent to the processing of my personal data for the MY TWINS service, in accordance with the <a onclick="closeModal('reg-modal');openModal('privacy-modal')">Privacy Policy</a>.</label>
+    </div>
+    <div class="consent">
+      <input type="checkbox" id="c2">
+      <label for="c2">I have read and accept the <a onclick="closeModal('reg-modal');openModal('terms-modal')">Terms of Service</a>. I confirm I am at least 18 years old.</label>
+    </div>
+    <button class="btn-reg" onclick="handleReg()">Create account</button>
+    <div class="login-link">Already have an account? <a onclick="showToast('Login — available at launch!')">Sign in</a></div>
+    <button style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted)" onclick="closeModal('reg-modal')"><i class="ti ti-x"></i></button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// i18n — lingue supportate
+const i18n = {
+  it:{hero_eyebrow:'LA TUA IDENTITÀ NEL MONDO',hero_sub:'MY TWINS ti aiuta a trovare chi ti assomiglia fisicamente — in modo sicuro, anonimo e consensuale.',btn_signup:"Crea il tuo profilo — è gratis",btn_howto:'How it works',stat_users:'Utenti iscritti',stat_matches:'Match confermati',stat_langs:'Lingue',how_eyebrow:'COME FUNZIONA',how_title:'Quattro passi verso il tuo twin',step1_title:'Crea il profilo',step2_title:'Sfoglia il feed',step3_title:'Refine twin ideale',step4_title:'Contattati in chat',feed_eyebrow:'IL FEED',feed_title:'Sfoglia i profili — trova il tuo twin'},
+  en:{hero_eyebrow:'YOUR IDENTITY IN THE WORLD',hero_sub:"MY TWINS helps you find someone who looks just like you — safely, anonymously and consensually.",btn_signup:"Create your profile — it's free",btn_howto:'How it works',stat_users:'Registered users',stat_matches:'Confirmed matches',stat_langs:'Languages',how_eyebrow:'HOW IT WORKS',how_title:'Four steps to your twin',step1_title:'Create your profile',step2_title:'Browse the feed',step3_title:'Refine your ideal twin',step4_title:'Chat anonymously',feed_eyebrow:'THE FEED',feed_title:'Browse profiles — find your twin'},
+  fr:{hero_eyebrow:'VOTRE IDENTITÉ DANS LE MONDE',hero_sub:"MY TWINS vous aide à trouver quelqu'un qui vous ressemble physiquement — en toute sécurité et de façon anonyme.",btn_signup:'Créer mon profil — gratuit',btn_howto:'Comment ça marche',stat_users:'Utilisateurs inscrits',stat_matches:'Jumeaux confirmés',stat_langs:'Langues',how_eyebrow:'COMMENT ÇA MARCHE',how_title:'Quatre étapes vers votre twin',step1_title:'Créez votre profil',step2_title:'Parcourez le fil',step3_title:'Affinez le twin idéal',step4_title:'Chattez anonymement',feed_eyebrow:'LE FIL',feed_title:'Parcourez les profils — trouvez votre twin'},
+  es:{hero_eyebrow:'TU IDENTIDAD EN EL MUNDO',hero_sub:'MY TWINS te ayuda a encontrar a alguien que se parece a ti físicamente — de forma segura, anónima y consensuada.',btn_signup:'Crear mi perfil — es gratis',btn_howto:'Cómo funciona',stat_users:'Usuarios registrados',stat_matches:'Coincidencias confirmadas',stat_langs:'Idiomas',how_eyebrow:'CÓMO FUNCIONA',how_title:'Cuatro pasos hacia tu twin',step1_title:'Crea tu perfil',step2_title:'Navega el feed',step3_title:'Afina tu twin ideal',step4_title:'Chatea de forma anónima',feed_eyebrow:'EL FEED',feed_title:'Explora perfiles — encuentra tu twin'},
+  de:{hero_eyebrow:'DEINE IDENTITÄT IN DER WELT',hero_sub:'MY TWINS hilft dir, jemanden zu finden, der dir körperlich ähnelt — sicher, anonym und einvernehmlich.',btn_signup:'Profil erstellen — kostenlos',btn_howto:'Wie es funktioniert',stat_users:'Registrierte Nutzer',stat_matches:'Bestätigte Matches',stat_langs:'Sprachen',how_eyebrow:'WIE ES FUNKTIONIERT',how_title:'Vier Schritte zu deinem Twin',step1_title:'Profil erstellen',step2_title:'Feed durchsuchen',step3_title:'Idealen Twin verfeinern',step4_title:'Anonym chatten',feed_eyebrow:'DER FEED',feed_title:'Profile durchsuchen — finde deinen Twin'},
+  zh:{hero_eyebrow:'你在世界上的身份',hero_sub:'MY TWINS 帮助你以安全、匿名、自愿的方式找到与你外貌相似的人。',btn_signup:'免费创建我的档案',btn_howto:'如何使用',stat_users:'注册用户',stat_matches:'已确认的匹配',stat_langs:'语言',how_eyebrow:'如何使用',how_title:'四步找到你的双胞胎',step1_title:'创建档案',step2_title:'浏览动态',step3_title:'精细化你的理想双胞胎',step4_title:'匿名聊天',feed_eyebrow:'动态',feed_title:'浏览档案 — 找到你的双胞胎'},
+  ja:{hero_eyebrow:'世界にあなたの分身がいる',hero_sub:'MY TWINSは、安全に・匿名で・合意のもとで、あなたに似た人を見つけるお手伝いをします。',btn_signup:'無料でプロフィールを作成',btn_howto:'使い方',stat_users:'登録ユーザー',stat_matches:'確認済みマッチ',stat_langs:'言語',how_eyebrow:'使い方',how_title:'4ステップであなたのツインを探す',step1_title:'プロフィール作成',step2_title:'フィードを閲覧',step3_title:'理想のツインを絞り込む',step4_title:'匿名チャット',feed_eyebrow:'フィード',feed_title:'プロフィールを閲覧 — ツインを見つけよう'},
+  ko:{hero_eyebrow:'세상 속 나의 또 다른 모습',hero_sub:'MY TWINS는 안전하고 익명으로, 그리고 상호 동의 하에 나를 닮은 사람을 찾도록 도와줍니다.',btn_signup:'무료로 프로필 만들기',btn_howto:'사용 방법',stat_users:'등록된 사용자',stat_matches:'확인된 매칭',stat_langs:'언어',how_eyebrow:'사용 방법',how_title:'나의 쌍둥이를 찾는 4단계',step1_title:'프로필 만들기',step2_title:'피드 탐색',step3_title:'이상적인 쌍둥이 찾기',step4_title:'익명 채팅',feed_eyebrow:'피드',feed_title:'프로필 탐색 — 나의 쌍둥이를 찾아보세요'},
+  hi:{hero_eyebrow:'दुनिया में आपकी पहचान',hero_sub:'MY TWINS आपको सुरक्षित, गुमनाम और सहमति के साथ आपसे मिलते-जुलते व्यक्ति को खोजने में मदद करता है।',btn_signup:'मुफ्त में प्रोफाइल बनाएं',btn_howto:'कैसे काम करता है',stat_users:'पंजीकृत उपयोगकर्ता',stat_matches:'पुष्टि किए गए मैच',stat_langs:'भाषाएँ',how_eyebrow:'कैसे काम करता है',how_title:'अपना जुड़वाँ खोजने के चार चरण',step1_title:'प्रोफाइल बनाएं',step2_title:'फ़ीड ब्राउज़ करें',step3_title:'आदर्श जुड़वाँ चुनें',step4_title:'गुमनाम चैट',feed_eyebrow:'फ़ीड',feed_title:'प्रोफाइल ब्राउज़ करें — अपना जुड़वाँ खोजें'},
+  ar:{hero_eyebrow:'هويتك في العالم',hero_sub:'.MY TWINS يساعدك على إيجاد شخص يشبهك جسدياً — بأمان وبشكل مجهول وبموافقة متبادلة',btn_signup:'أنشئ ملفك الشخصي مجاناً',btn_howto:'كيف يعمل',stat_users:'المستخدمون المسجلون',stat_matches:'التطابقات المؤكدة',stat_langs:'اللغات',how_eyebrow:'كيف يعمل',how_title:'أربع خطوات للعثور على توأمك',step1_title:'أنشئ ملفك الشخصي',step2_title:'تصفح الخلاصة',step3_title:'حسّن بحثك',step4_title:'تواصل بشكل مجهول',feed_eyebrow:'الخلاصة',feed_title:'تصفح الملفات — اعثر على توأمك'},
+  pt:{hero_eyebrow:'SUA IDENTIDADE NO MUNDO',hero_sub:'MY TWINS ajuda você a encontrar alguém fisicamente parecido com você — de forma segura, anônima e consensual.',btn_signup:'Criar meu perfil — grátis',btn_howto:'Como funciona',stat_users:'Usuários cadastrados',stat_matches:'Matches confirmados',stat_langs:'Idiomas',how_eyebrow:'COMO FUNCIONA',how_title:'Quatro passos para encontrar seu twin',step1_title:'Crie seu perfil',step2_title:'Explore o feed',step3_title:'Refine seu twin ideal',step4_title:'Converse anonimamente',feed_eyebrow:'O FEED',feed_title:'Explore perfis — encontre seu twin'},
+  ru:{hero_eyebrow:'ВАША ЛИЧНОСТЬ В МИРЕ',hero_sub:'MY TWINS помогает найти человека, похожего на вас внешне — безопасно, анонимно и по взаимному согласию.',btn_signup:'Создать профиль — бесплатно',btn_howto:'Как это работает',stat_users:'Зарегистрированных пользователей',stat_matches:'Подтверждённых совпадений',stat_langs:'Языков',how_eyebrow:'КАК ЭТО РАБОТАЕТ',how_title:'Четыре шага к своему двойнику',step1_title:'Создайте профиль',step2_title:'Листайте ленту',step3_title:'Уточните идеального двойника',step4_title:'Общайтесь анонимно',feed_eyebrow:'ЛЕНТА',feed_title:'Листайте профили — найдите своего двойника'}
+};
+let currentLang = 'en';
+function setLang(btn, lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const t = i18n[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if(t[key]) el.textContent = t[key];
+  });
+  // RTL per arabo
+  document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', lang);
+}
+
+// Modals
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function openReg(){ openModal('reg-modal'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if(e.target===el) closeModal(el.id); });
+});
+
+// Toast
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+// FAQ
+function toggleFaq(el){ el.closest('.faq-item').classList.toggle('open'); }
+
+// Feed filters
+function setFilter(btn){ document.querySelectorAll('.ff').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+
+// Refine sliders
+const sliders = ['s-eye-d','s-brows','s-eye-sh','s-nose-w','s-nose-p','s-lips','s-chin','s-cheeks','s-jaw'];
+function sv(id){ const v=parseInt(document.getElementById(id).value); document.getElementById('d-'+id).classList.toggle('on',v!==3); }
+function setIc(el){ document.querySelectorAll('.ic').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+const mocks=[{ava:'👩',id:'#4821',pct:91},{ava:'🧑',id:'#9134',pct:89},{ava:'👱',id:'#6602',pct:86},{ava:'👩‍🦱',id:'#3317',pct:84},{ava:'👨',id:'#7750',pct:81}];
+function doRefineSearch(){
+  const box=document.getElementById('refineResults');
+  const grid=document.getElementById('refineGrid');
+  const picks=[mocks[0],...mocks.slice(1).sort(()=>Math.random()-.5).slice(0,2)];
+  grid.innerHTML=picks.map((r,i)=>`<div class="rc ${i===0?'top':''}"><div class="rc-ava">${r.ava}</div><div class="rc-pct">${r.pct+(i>0?Math.floor(Math.random()*5):0)}%</div><div class="rc-delta">${i===0?'Base match':'↑ refined'}</div><div class="rc-id">Utente ${r.id}</div></div>`).join('');
+  box.classList.add('show');
+}
+function resetSliders(){ sliders.forEach(id=>{ document.getElementById(id).value=3; document.getElementById('d-'+id).classList.remove('on'); }); document.getElementById('refineResults').classList.remove('show'); }
+
+// Report profilo
+function reportProfile(e, userId) {
+  e.stopPropagation();
+  document.getElementById('reportUserId').textContent = userId;
+  document.getElementById('report-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeReport() {
+  document.getElementById('report-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function sendReport() {
+  const reason = document.querySelector('input[name="reportReason"]:checked');
+  if (!reason) { showToast('Please select a reason for the report'); return; }
+  closeReport();
+  showToast('Report sent — thank you for helping keep the community safe.');
+}
+document.getElementById('report-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('report-modal')) closeReport();
+});
+
+// Register
+function handleReg(){
+  const c1=document.getElementById('c1').checked;
+  const c2=document.getElementById('c2').checked;
+  if(!c1||!c2){ showToast('Please accept the consents to continue'); return; }
+  closeModal('reg-modal');
+  showToast('Welcome to MY TWINS! Coming soon.');
+}
+</script>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    includedLanguages: 'en,it,fr,es,de,zh-CN,ja,ko,hi,ar,pt,ru,tr,nl,pl,sv,da,fi,no,cs,hu,ro,uk,vi,th,id,ms',
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    autoDisplay: false,
+    gaTrack: false,
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
