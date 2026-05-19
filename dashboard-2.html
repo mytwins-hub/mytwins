@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY TWINS — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Daily.co for video calls -->
+<script src="https://unpkg.com/@daily-co/daily-js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#1A1614;--ink-soft:#2A2420;--ink-mid:#3A3028;
+  --gold:#C9A84C;--gold-dark:#8A6A1F;--gold-light:#F0DFA0;
+  --cream:#FAF7F2;--cream-dark:#F0EBE0;--cream-mid:#E8E0D4;
+  --muted:#8A8078;--white:#fff;
+  --teal:#1D9E75;--teal-bg:#E1F5EE;
+  --purple:#534AB7;--purple-bg:#EEEDFE;
+  --amber:#854F0B;--amber-bg:#FAEEDA;
+  --red:#E24B4A;--red-bg:#FEE8E8;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+/* ── NAV ── */
+nav{background:var(--ink);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:18px;letter-spacing:3px;color:var(--gold);}
+.nav-logo span{color:rgba(255,255,255,0.3);}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{background:none;border:none;color:rgba(255,255,255,0.45);font-size:12px;font-family:'DM Sans',sans-serif;padding:7px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.nav-tab:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);}
+.nav-tab.on{background:rgba(201,168,76,0.15);color:var(--gold);}
+.nav-tab i{font-size:15px;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.user-badge{background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:20px;padding:5px 12px;font-size:12px;display:flex;align-items:center;gap:6px;}
+.btn-signout{background:none;border:0.5px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);border-radius:var(--radius-sm);padding:6px 12px;font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-signout:hover{border-color:var(--red);color:var(--red);}
+
+/* ── LAYOUT ── */
+.main{max-width:960px;margin:0 auto;padding:28px 20px;}
+.section{display:none;}
+.section.on{display:block;}
+
+/* ── PROFILE WIZARD ── */
+.wizard-header{margin-bottom:24px;}
+.wizard-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--ink);margin-bottom:6px;}
+.wizard-sub{font-size:14px;color:var(--muted);line-height:1.6;}
+.progress-wrap{display:flex;align-items:center;gap:12px;margin-top:16px;}
+.progress-bar{flex:1;height:4px;background:var(--cream-mid);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s;}
+.progress-pct{font-size:12px;color:var(--muted);min-width:36px;text-align:right;}
+
+.step-card{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius);padding:24px;margin-bottom:16px;}
+.step-label{font-size:11px;color:var(--muted);letter-spacing:.4px;margin-bottom:5px;}
+.step-title{font-size:18px;font-weight:500;color:var(--ink);margin-bottom:16px;}
+
+/* Chips */
+.chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.chip{padding:9px 16px;border-radius:20px;font-size:13px;border:0.5px solid var(--cream-mid);background:var(--white);color:var(--ink);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.chip:hover{background:var(--cream);}
+.chip.on{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
+/* Swatches */
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px;margin-bottom:20px;}
+.swatch{aspect-ratio:1;border-radius:var(--radius-sm);border:2px solid transparent;cursor:pointer;transition:border-color .15s;display:flex;align-items:flex-end;padding:4px;}
+.swatch.on{border-color:var(--gold);}
+.swatch-lbl{font-size:9px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.7);font-weight:500;line-height:1.2;}
+.swatch-lbl.dark{color:#333;text-shadow:none;}
+
+/* Slider */
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.slider-row input[type=range]{flex:1;accent-color:var(--gold);}
+.slider-val{font-size:16px;font-weight:500;color:var(--ink);min-width:52px;text-align:right;}
+
+/* Textarea */
+.profile-textarea{width:100%;border:0.5px solid var(--cream-mid);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);resize:none;outline:none;transition:border-color .2s;line-height:1.65;}
+.profile-textarea:focus{border-color:var(--gold);}
+.char-count{font-size:11px;color:var(--muted);text-align:right;margin-top:4px;}
+
+/* Nav buttons */
+.step-nav{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.btn-back{background:none;border:0.5px solid var(--cream-mid);color:var(--muted);border-radius:var(--radius-sm);padding:10px 20px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.btn-next{background:var(--ink);color:var(--white);border:none;border-radius:var(--radius-sm);padding:10px 24px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;}
+.btn-next:hover{opacity:.85;}
+.btn-gold{background:var(--gold);color:var(--ink);border:none;border-radius:var(--radius-sm);padding:12px 28px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;}
+.btn-gold:hover{opacity:.85;}
+
+/* Photo upload */
+.photo-upload-box{border:1.5px dashed var(--cream-mid);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px;}
+.photo-upload-box:hover{border-color:var(--gold);background:var(--cream);}
+.upload-icon{font-size:32px;color:var(--muted);margin-bottom:10px;}
+.upload-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+.upload-sub{font-size:12px;color:var(--muted);}
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.photo-slot{aspect-ratio:1;border-radius:var(--radius-sm);background:var(--cream-dark);border:0.5px solid var(--cream-mid);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;font-size:32px;}
+.photo-slot.has-photo{background:var(--ink-soft);}
+.photo-remove{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;}
+.photo-slot:hover .photo-remove{display:flex;}
+
+/* ── FEED ── */
+.feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.feed-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);}
+.feed-filters{display:flex;gap:6px;flex-wrap:wrap;}
+.ff{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;color:var(--muted);}
+.ff.on{background:var(--ink);color:var(--white);border-color:var(--ink);}
+.feed-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.feed-card{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s;position:relative;}
+.feed-card:hover{transform:translateY(-3px);border-color:var(--gold);}
+.feed-photo{aspect-ratio:3/4;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:56px;}
+.feed-meta{padding:12px;}
+.feed-pct{font-size:18px;font-weight:500;color:var(--ink);}
+.feed-pct span{font-size:11px;color:var(--muted);font-weight:400;margin-left:3px;}
+.feed-traits{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.feed-hobbies{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.hobby-tag{background:var(--teal-bg);color:var(--teal);font-size:10px;padding:2px 7px;border-radius:20px;}
+.feed-bar{height:2px;background:var(--cream-mid);border-radius:1px;margin-top:10px;overflow:hidden;}
+.feed-fill{height:100%;background:var(--gold);border-radius:1px;}
+.report-btn-feed{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.45);border:none;border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;opacity:0;transition:opacity .2s;}
+.feed-card:hover .report-btn-feed{opacity:1;}
+.report-btn-feed:hover{background:rgba(226,75,74,.8);color:#fff;}
+
+/* Match request button */
+.btn-match{width:100%;background:var(--ink);color:var(--gold);border:none;border-radius:var(--radius-sm);padding:10px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:8px;transition:opacity .2s;}
+.btn-match:hover{opacity:.85;}
+
+/* ── CHAT ── */
+.matches-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.match-item{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius);padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;}
+.match-item:hover{border-color:var(--gold);}
+.match-item.on{border-color:var(--gold);background:var(--cream);}
+.match-ava{width:46px;height:46px;border-radius:50%;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1.5px solid var(--gold);}
+.match-info{flex:1;}
+.match-name{font-size:14px;font-weight:500;color:var(--ink);}
+.match-last{font-size:12px;color:var(--muted);margin-top:2px;}
+.match-pct{font-size:13px;font-weight:500;color:var(--gold);}
+.unread-badge{background:var(--gold);color:var(--ink);font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;}
+
+.chat-layout{display:grid;grid-template-columns:280px 1fr;gap:16px;height:520px;}
+.chat-sidebar{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius);overflow-y:auto;}
+.chat-sidebar-title{font-size:13px;font-weight:500;color:var(--ink);padding:14px 16px;border-bottom:0.5px solid var(--cream-mid);}
+.chat-match-item{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;border-bottom:0.5px solid var(--cream-mid);}
+.chat-match-item:hover{background:var(--cream);}
+.chat-match-item.on{background:var(--cream);}
+.chat-ava{width:36px;height:36px;border-radius:50%;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.chat-name{font-size:13px;font-weight:500;color:var(--ink);}
+.chat-preview{font-size:11px;color:var(--muted);}
+
+.chat-main{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius);display:flex;flex-direction:column;}
+.chat-header{padding:14px 16px;border-bottom:0.5px solid var(--cream-mid);display:flex;align-items:center;gap:10px;}
+.chat-header-ava{width:36px;height:36px;border-radius:50%;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.chat-header-name{font-size:14px;font-weight:500;color:var(--ink);}
+.chat-header-status{font-size:11px;color:var(--teal);}
+.chat-actions{margin-left:auto;display:flex;gap:6px;}
+.chat-action-btn{background:none;border:0.5px solid var(--cream-mid);border-radius:var(--radius-sm);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:16px;transition:all .2s;}
+.chat-action-btn:hover{background:var(--cream);color:var(--ink);}
+.chat-action-btn.video{border-color:var(--teal);color:var(--teal);}
+.chat-action-btn.video:hover{background:var(--teal-bg);}
+
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.msg-row{display:flex;gap:8px;align-items:flex-end;}
+.msg-row.mine{flex-direction:row-reverse;}
+.msg-ava{width:28px;height:28px;border-radius:50%;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.bubble{max-width:68%;border-radius:14px;padding:10px 14px;font-size:13px;line-height:1.5;}
+.bubble.theirs{background:var(--cream-dark);color:var(--ink);border-bottom-left-radius:4px;}
+.bubble.mine{background:var(--ink);color:var(--white);border-bottom-right-radius:4px;}
+.bubble-time{font-size:10px;color:var(--muted);margin-top:3px;}
+.msg-row.mine .bubble-time{text-align:right;}
+.system-msg{text-align:center;font-size:11px;color:var(--muted);background:var(--cream);border-radius:20px;padding:4px 12px;align-self:center;}
+
+/* Media messages */
+.bubble-media{max-width:68%;border-radius:14px;overflow:hidden;cursor:pointer;}
+.bubble-media img{width:100%;display:block;}
+.bubble-media video{width:100%;display:block;max-height:200px;}
+
+.chat-input-wrap{padding:12px 14px;border-top:0.5px solid var(--cream-mid);display:flex;gap:8px;align-items:flex-end;}
+.chat-input{flex:1;border:0.5px solid var(--cream-mid);border-radius:20px;padding:9px 16px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;resize:none;max-height:100px;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--gold);}
+.chat-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;padding:6px;transition:color .2s;flex-shrink:0;}
+.chat-btn:hover{color:var(--ink);}
+.chat-btn.send{background:var(--ink);color:var(--gold);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.chat-btn.send:hover{opacity:.85;}
+.file-input{display:none;}
+
+/* ── VIDEO CALL ── */
+.video-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;flex-direction:column;align-items:center;justify-content:center;}
+.video-overlay.open{display:flex;}
+.video-container{width:100%;max-width:800px;height:480px;border-radius:var(--radius);overflow:hidden;background:#000;position:relative;}
+#daily-frame{width:100%;height:100%;border:none;}
+.video-controls{display:flex;gap:12px;margin-top:20px;align-items:center;}
+.video-btn{background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.2);color:#fff;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;transition:all .2s;}
+.video-btn:hover{background:rgba(255,255,255,0.2);}
+.video-btn.end{background:var(--red);border-color:var(--red);}
+.video-btn.end:hover{opacity:.85;}
+.video-partner-name{color:rgba(255,255,255,.6);font-size:13px;text-align:center;margin-bottom:8px;}
+
+/* ── RADAR SECTION ── */
+.radar-intro{background:var(--ink);border-radius:var(--radius);padding:24px;margin-bottom:20px;text-align:center;}
+.radar-slogan{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:8px;line-height:1.4;}
+.radar-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.65;}
+.radar-feed{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.radar-card{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius-sm);padding:10px;text-align:center;cursor:pointer;border-width:1.5px;transition:border-color .15s;}
+.radar-card.picked{border-color:var(--gold);}
+.radar-face{font-size:32px;margin-bottom:4px;}
+.radar-id{font-size:11px;color:var(--muted);}
+.radar-check{display:none;position:absolute;top:6px;right:6px;background:var(--gold);color:var(--ink);border-radius:50%;width:18px;height:18px;font-size:11px;align-items:center;justify-content:center;}
+.radar-card.picked .radar-check{display:flex;}
+.radar-card{position:relative;}
+.radar-pair{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--cream-dark);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;}
+.radar-pair-face{font-size:36px;width:56px;height:56px;background:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--gold);}
+.radar-points{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.radar-pt{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius-sm);padding:12px;text-align:center;}
+.radar-pt-num{font-size:20px;font-weight:500;color:var(--ink);}
+.radar-pt-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ── PROFILE SUMMARY ── */
+.profile-summary{background:var(--white);border:0.5px solid var(--cream-mid);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.ps-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.ps-ava{width:64px;height:64px;border-radius:50%;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:32px;border:2px solid var(--gold);}
+.ps-name{font-size:18px;font-weight:500;color:var(--ink);}
+.ps-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ps-item{background:var(--cream);border-radius:var(--radius-sm);padding:10px 12px;}
+.ps-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
+.ps-val{font-size:13px;font-weight:500;color:var(--ink);}
+.ps-hobbies{margin-top:12px;}
+.ps-char{margin-top:12px;font-size:13px;color:var(--muted);line-height:1.7;font-style:italic;padding:12px;background:var(--cream);border-radius:var(--radius-sm);border-left:3px solid var(--gold);}
+.btn-edit{background:none;border:0.5px solid var(--cream-mid);color:var(--muted);border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:12px;}
+
+/* ── ALERTS ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--white);padding:12px 20px;border-radius:9px;font-size:13px;border-left:3px solid var(--gold);z-index:300;display:none;animation:slideIn .3s ease;}
+.toast.show{display:block;}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .feed-grid{grid-template-columns:1fr 1fr;}
+  .chat-layout{grid-template-columns:1fr;height:auto;}
+  .chat-sidebar{display:none;}
+  .radar-feed,.radar-points{grid-template-columns:1fr 1fr;}
+  .nav-tabs{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">MY <span>TWINS</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab on" onclick="showSection('feed')" id="tab-feed">
+      <i class="ti ti-layout-grid" aria-hidden="true"></i> Feed
+    </button>
+    <button class="nav-tab" onclick="showSection('chat')" id="tab-chat">
+      <i class="ti ti-message-circle" aria-hidden="true"></i> Chat
+    </button>
+    <button class="nav-tab" onclick="showSection('radar')" id="tab-radar">
+      <i class="ti ti-radar-2" aria-hidden="true"></i> Twin Radar
+    </button>
+    <button class="nav-tab" onclick="showSection('profile')" id="tab-profile">
+      <i class="ti ti-user" aria-hidden="true"></i> My Profile
+    </button>
+  </div>
+  <div class="nav-right">
+    <div class="user-badge"><i class="ti ti-user-circle" style="font-size:15px" aria-hidden="true"></i> <span id="user-nickname">User</span></div>
+    <button class="btn-signout" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- ══════════════════════════════
+       PROFILE WIZARD
+  ══════════════════════════════ -->
+  <div class="section on" id="section-wizard">
+    <div class="wizard-header">
+      <div class="wizard-title">Complete your profile</div>
+      <div class="wizard-sub">Tell us about yourself so we can find your twin. The more you share, the better the matches!</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="wiz-progress" style="width:0%"></div></div>
+        <div class="progress-pct" id="wiz-pct">0%</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Photos -->
+    <div class="step-card" id="wiz-step-1">
+      <div class="step-label">Step 1 of 6</div>
+      <div class="step-title">Add your photos</div>
+      <div class="photo-upload-box" onclick="document.getElementById('photo-input').click()">
+        <div class="upload-icon"><i class="ti ti-upload" aria-hidden="true"></i></div>
+        <div class="upload-title">Upload your photos</div>
+        <div class="upload-sub">JPG, PNG · max 10MB · at least 1 required<br>Your face should be clearly visible</div>
+      </div>
+      <input type="file" id="photo-input" class="file-input" accept="image/*" multiple onchange="handlePhotos(this)">
+      <div class="photo-grid" id="photo-grid">
+        <div class="photo-slot" id="slot-0"><i class="ti ti-plus" style="font-size:20px;color:var(--muted)" aria-hidden="true"></i></div>
+        <div class="photo-slot" id="slot-1"><i class="ti ti-plus" style="font-size:20px;color:var(--muted)" aria-hidden="true"></i></div>
+        <div class="photo-slot" id="slot-2"><i class="ti ti-plus" style="font-size:20px;color:var(--muted)" aria-hidden="true"></i></div>
+        <div class="photo-slot" id="slot-3"><i class="ti ti-plus" style="font-size:20px;color:var(--muted)" aria-hidden="true"></i></div>
+      </div>
+      <div class="step-nav">
+        <span></span>
+        <button class="btn-next" onclick="wizNext(1)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Physical features -->
+    <div class="step-card" id="wiz-step-2" style="display:none">
+      <div class="step-label">Step 2 of 6</div>
+      <div class="step-title">Your physical features</div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:10px;">Ethnicity</div>
+      <div class="chip-grid" id="chips-ethnicity">
+        <div class="chip" onclick="pickChip(this,'ethnicity')">European</div>
+        <div class="chip" onclick="pickChip(this,'ethnicity')">East European</div>
+        <div class="chip" onclick="pickChip(this,'ethnicity')">Latin American</div>
+        <div class="chip" onclick="pickChip(this,'ethnicity')">African</div>
+        <div class="chip" onclick="pickChip(this,'ethnicity')">Middle Eastern</div>
+        <div class="chip" onclick="pickChip(this,'ethnicity')">South Asian</div>
+        <div class="chip" onclick="pickChip(this,'ethnicity')">East Asian</div>
+        <div class="chip" onclick="pickChip(this,'ethnicity')">Mixed</div>
+        <div class="chip" onclick="pickChip(this,'ethnicity')">Other</div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:14px 0 10px;">Eye colour</div>
+      <div class="swatch-grid">
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Black')" style="background:#1a1008"><span class="swatch-lbl">Black</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Dark brown')" style="background:#3d1f00"><span class="swatch-lbl">Dark brown</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Brown')" style="background:#7b4a1e"><span class="swatch-lbl">Brown</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Hazel')" style="background:#a0722a"><span class="swatch-lbl">Hazel</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Green')" style="background:#3a7d44"><span class="swatch-lbl">Green</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Grey-green')" style="background:#6b8e6b"><span class="swatch-lbl">Grey-green</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Grey')" style="background:#7a8a8a"><span class="swatch-lbl">Grey</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Light blue')" style="background:#6aadcc"><span class="swatch-lbl">Light blue</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'eye_color','Blue')" style="background:#2060a0"><span class="swatch-lbl">Blue</span></div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:14px 0 10px;">Hair colour</div>
+      <div class="swatch-grid">
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','Black')" style="background:#111"><span class="swatch-lbl">Black</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','Dark brown')" style="background:#2d1a0e"><span class="swatch-lbl">Dark brown</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','Brown')" style="background:#6b3a2a"><span class="swatch-lbl">Brown</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','Red-brown')" style="background:#8b3a1a"><span class="swatch-lbl">Red-brown</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','Red')" style="background:#c04a10"><span class="swatch-lbl">Red</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','Dark blonde')" style="background:#b8893a"><span class="swatch-lbl">Dark blonde</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','Blonde')" style="background:#d4b06a"><span class="swatch-lbl">Blonde</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','Light blonde')" style="background:#e8d090"><span class="swatch-lbl dark">Light blonde</span></div>
+        <div class="swatch" onclick="pickSwatch(this,'hair_color','White/Grey')" style="background:#c8c8c8"><span class="swatch-lbl dark">White/Grey</span></div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:14px 0 10px;">Face shape</div>
+      <div class="chip-grid" id="chips-face_shape">
+        <div class="chip" onclick="pickChip(this,'face_shape')">Oval</div>
+        <div class="chip" onclick="pickChip(this,'face_shape')">Round</div>
+        <div class="chip" onclick="pickChip(this,'face_shape')">Square</div>
+        <div class="chip" onclick="pickChip(this,'face_shape')">Rectangle</div>
+        <div class="chip" onclick="pickChip(this,'face_shape')">Heart</div>
+        <div class="chip" onclick="pickChip(this,'face_shape')">Diamond</div>
+        <div class="chip" onclick="pickChip(this,'face_shape')">Triangle</div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:14px 0 10px;">Build</div>
+      <div class="chip-grid" id="chips-build">
+        <div class="chip" onclick="pickChip(this,'build')">Very slim</div>
+        <div class="chip" onclick="pickChip(this,'build')">Slim</div>
+        <div class="chip" onclick="pickChip(this,'build')">Average</div>
+        <div class="chip" onclick="pickChip(this,'build')">Athletic</div>
+        <div class="chip" onclick="pickChip(this,'build')">Stocky</div>
+        <div class="chip" onclick="pickChip(this,'build')">Curvy</div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:14px 0 8px;">Height</div>
+      <div class="slider-row">
+        <input type="range" min="140" max="220" value="170" step="1" id="height-slider" oninput="document.getElementById('height-val').textContent=this.value+' cm'">
+        <div class="slider-val" id="height-val">170 cm</div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-back" onclick="wizBack(2)">← Back</button>
+        <button class="btn-next" onclick="wizNext(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Facial features -->
+    <div class="step-card" id="wiz-step-3" style="display:none">
+      <div class="step-label">Step 3 of 6</div>
+      <div class="step-title">Facial features</div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:10px;">Distinguishing features (select all that apply)</div>
+      <div class="chip-grid" id="chips-features">
+        <div class="chip multi" onclick="pickMulti(this,'features')">Freckles</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Dimples</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Prominent cheekbones</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Strong jawline</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Wide forehead</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Hooked nose</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Snub nose</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Full lips</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Thick eyebrows</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Almond eyes</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Large eyes</div>
+        <div class="chip multi" onclick="pickMulti(this,'features')">Prominent ears</div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:16px 0 10px;">Scars or marks</div>
+      <div class="chip-grid" id="chips-scars">
+        <div class="chip multi" onclick="pickMulti(this,'scars')">None</div>
+        <div class="chip multi" onclick="pickMulti(this,'scars')">Facial scar</div>
+        <div class="chip multi" onclick="pickMulti(this,'scars')">Neck scar</div>
+        <div class="chip multi" onclick="pickMulti(this,'scars')">Hand/arm scar</div>
+        <div class="chip multi" onclick="pickMulti(this,'scars')">Visible tattoos</div>
+        <div class="chip multi" onclick="pickMulti(this,'scars')">Large birthmark</div>
+        <div class="chip multi" onclick="pickMulti(this,'scars')">Visible piercings</div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-back" onclick="wizBack(3)">← Back</button>
+        <button class="btn-next" onclick="wizNext(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Hobbies -->
+    <div class="step-card" id="wiz-step-4" style="display:none">
+      <div class="step-label">Step 4 of 6</div>
+      <div class="step-title">Your hobbies & interests</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">This is private — only visible to your matches after mutual confirmation. Select all that apply!</div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:10px;"><i class="ti ti-mountain" style="font-size:14px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i> Sports & Adventure</div>
+      <div class="chip-grid" id="chips-hobbies-sport">
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🎣 Fishing</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🏊 Swimming</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🎯 Hunting</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🚴 Biking</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🥾 Hiking</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🧘 Yoga</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🤿 Diving</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🏄 Surfing</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">⛷️ Skiing</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🏋️ Gym</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">⚽ Football</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🎾 Tennis</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🏇 Horse riding</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🚜 Farming/Tractors</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🧗 Climbing</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🏹 Archery</div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:16px 0 10px;"><i class="ti ti-music" style="font-size:14px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i> Arts & Culture</div>
+      <div class="chip-grid">
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🎵 Music</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🎬 Cinema</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">📸 Photography</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🎭 Theatre</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">📚 Reading</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🎨 Painting</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">✍️ Writing</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🎮 Gaming</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">📺 Watching videos</div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:16px 0 10px;"><i class="ti ti-paw" style="font-size:14px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i> Nature & Animals</div>
+      <div class="chip-grid">
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🐕 Dogs</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🐈 Cats</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🐴 Horses</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🌿 Gardening</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🐦 Birdwatching</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🌊 Beach/Sea</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🏕️ Camping</div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:16px 0 10px;"><i class="ti ti-tools-kitchen-2" style="font-size:14px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i> Food & Travel</div>
+      <div class="chip-grid">
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">👨‍🍳 Cooking</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🍷 Wine tasting</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">✈️ Travelling</div>
+        <div class="chip multi" onclick="pickMulti(this,'hobbies')">🍕 Food & Restaurants</div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-back" onclick="wizBack(4)">← Back</button>
+        <button class="btn-next" onclick="wizNext(4)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Character -->
+    <div class="step-card" id="wiz-step-5" style="display:none">
+      <div class="step-label">Step 5 of 6</div>
+      <div class="step-title">Describe your character</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Write a few sentences about yourself — your personality, values, what makes you unique. This is private and only visible after a confirmed match.</div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px;">Some examples to inspire you:</div>
+      <div style="font-size:12px;color:var(--muted);background:var(--cream);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px;line-height:1.7;border-left:3px solid var(--gold);">
+        "I consider myself a kind and generous person. I love animals, especially dogs and horses. I am affectionate with children and enjoy being in nature. I value loyalty and honesty above everything."
+      </div>
+
+      <textarea class="profile-textarea" id="character-text" rows="5" maxlength="500" placeholder="Tell us about your personality, values and what makes you unique..." oninput="updateCharCount()"></textarea>
+      <div class="char-count"><span id="char-count">0</span>/500</div>
+
+      <div class="step-nav">
+        <button class="btn-back" onclick="wizBack(5)">← Back</button>
+        <button class="btn-next" onclick="wizNext(5)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 6: Gender & Privacy -->
+    <div class="step-card" id="wiz-step-6" style="display:none">
+      <div class="step-label">Step 6 of 6</div>
+      <div class="step-title">Almost done!</div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin-bottom:10px;">How do you identify?</div>
+      <div class="chip-grid" id="chips-gender">
+        <div class="chip" onclick="pickChip(this,'gender')">Man</div>
+        <div class="chip" onclick="pickChip(this,'gender')">Woman</div>
+        <div class="chip" onclick="pickChip(this,'gender')">Non-binary</div>
+        <div class="chip" onclick="pickChip(this,'gender')">Prefer not to say</div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;color:var(--muted);margin:16px 0 10px;">Privacy settings</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink);cursor:pointer;">
+          <input type="checkbox" id="pref-twin-radar" checked style="accent-color:var(--gold);">
+          Allow Twin Radar — community members can signal me as a potential twin for others
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink);cursor:pointer;">
+          <input type="checkbox" id="pref-hobbies-visible" checked style="accent-color:var(--gold);">
+          Show my hobbies and character to confirmed matches only
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink);cursor:pointer;">
+          <input type="checkbox" id="pref-video-calls" checked style="accent-color:var(--gold);">
+          Allow video calls with confirmed matches
+        </label>
+      </div>
+
+      <div style="background:var(--teal-bg);border-radius:var(--radius-sm);padding:14px;display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#065F46;line-height:1.65;margin-bottom:20px;">
+        <i class="ti ti-shield-check" style="font-size:16px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>
+        Your personal data is always private. Hobbies, character and personal details are only shared after mutual match confirmation. You can update your preferences at any time.
+      </div>
+
+      <button class="btn-gold" style="width:100%" onclick="saveProfile()">
+        <i class="ti ti-check" style="font-size:15px;vertical-align:-2px;margin-right:6px" aria-hidden="true"></i>
+        Save my profile and start finding my twin!
+      </button>
+
+      <div class="step-nav" style="margin-top:10px;">
+        <button class="btn-back" onclick="wizBack(6)">← Back</button>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       FEED
+  ══════════════════════════════ -->
+  <div class="section" id="section-feed">
+    <div class="feed-header">
+      <div class="feed-title">Browse profiles</div>
+      <div class="feed-filters">
+        <button class="ff on" onclick="setFilter(this)">For you</button>
+        <button class="ff" onclick="setFilter(this)">Top match</button>
+        <button class="ff" onclick="setFilter(this)">Global</button>
+        <button class="ff" onclick="setFilter(this)">New</button>
+      </div>
+    </div>
+    <div class="feed-grid" id="feed-grid"></div>
+  </div>
+
+  <!-- ══════════════════════════════
+       CHAT
+  ══════════════════════════════ -->
+  <div class="section" id="section-chat">
+    <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);margin-bottom:16px;">Your matches</div>
+    <div class="chat-layout">
+      <div class="chat-sidebar">
+        <div class="chat-sidebar-title">Confirmed matches</div>
+        <div id="chat-matches-list"></div>
+      </div>
+      <div class="chat-main" id="chat-main">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;">
+          Select a match to start chatting
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       TWIN RADAR
+  ══════════════════════════════ -->
+  <div class="section" id="section-radar">
+    <div class="radar-intro">
+      <div class="radar-slogan">"If you help someone find their lookalike,<br>someone might help you find yours."</div>
+      <div class="radar-sub">Spot two users who look similar? Signal them — earn Radar points and exclusive rewards!</div>
+    </div>
+
+    <div class="radar-points">
+      <div class="radar-pt"><div class="radar-pt-num" id="radar-total">0</div><div class="radar-pt-lbl">Total points</div></div>
+      <div class="radar-pt"><div class="radar-pt-num" id="radar-signals">0</div><div class="radar-pt-lbl">Signals sent</div></div>
+      <div class="radar-pt"><div class="radar-pt-num" id="radar-matches">0</div><div class="radar-pt-lbl">Matches made</div></div>
+      <div class="radar-pt"><div class="radar-pt-num" id="radar-rank">—</div><div class="radar-pt-lbl">Badge</div></div>
+    </div>
+
+    <div style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:12px;">Pick two users who look similar</div>
+    <div class="radar-feed" id="radar-feed-grid"></div>
+
+    <div id="radar-pair-preview" style="display:none">
+      <div class="radar-pair">
+        <div class="radar-pair-face" id="radar-face-a">?</div>
+        <div style="font-size:22px;color:var(--gold)"><i class="ti ti-arrows-exchange" aria-hidden="true"></i></div>
+        <div class="radar-pair-face" id="radar-face-b">?</div>
+      </div>
+      <div class="slider-row">
+        <div style="font-size:12px;color:var(--muted);min-width:120px;">Estimated similarity</div>
+        <input type="range" min="60" max="99" value="85" id="radar-sim-slider" oninput="document.getElementById('radar-sim-val').textContent=this.value+'%'">
+        <div class="slider-val" id="radar-sim-val">85%</div>
+      </div>
+      <textarea class="profile-textarea" rows="2" placeholder="Optional note — why do you think they look similar?" style="margin-bottom:12px;"></textarea>
+      <button class="btn-gold" style="width:100%" onclick="sendRadarSignal()">
+        <i class="ti ti-radar-2" style="font-size:15px;vertical-align:-2px;margin-right:6px" aria-hidden="true"></i>
+        Send Twin Radar signal
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       MY PROFILE
+  ══════════════════════════════ -->
+  <div class="section" id="section-profile">
+    <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);margin-bottom:16px;">My Profile</div>
+    <div class="profile-summary" id="profile-summary">
+      <div style="text-align:center;padding:24px;color:var(--muted);">Loading your profile...</div>
+    </div>
+    <button class="btn-next" onclick="showSection('wizard')">Edit profile</button>
+  </div>
+
+</div>
+
+<!-- VIDEO CALL OVERLAY -->
+<div class="video-overlay" id="video-overlay">
+  <div class="video-partner-name" id="video-partner-name">Video call with User #4821</div>
+  <div class="video-container">
+    <iframe id="daily-frame" allow="camera; microphone; fullscreen; display-capture"></iframe>
+  </div>
+  <div class="video-controls">
+    <button class="video-btn" onclick="toggleMic()" id="btn-mic" title="Mute/Unmute"><i class="ti ti-microphone" aria-hidden="true"></i></button>
+    <button class="video-btn" onclick="toggleCam()" id="btn-cam" title="Camera on/off"><i class="ti ti-video" aria-hidden="true"></i></button>
+    <button class="video-btn end" onclick="endCall()" title="End call"><i class="ti ti-phone-off" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════
+// SUPABASE CONFIG
+// ══════════════════════════════════════
+const SUPABASE_URL = 'https://sayblqfzilhttlnuiirn.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNheWJscWZ6aWxodHRsbnVpaXJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMjM1NDYsImV4cCI6MjA5NDU5OTU0Nn0.iMjGcnFVjFzWxWkoNjjARllklVAi3diyXjWc3NAAKYA'
+
+const { createClient } = supabase
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+let currentUser = null
+let currentProfile = null
+let wizStep = 1
+let profileData = {}
+let radarSelected = []
+let callFrame = null
+let currentChatMatch = null
+let currentPhysProfile = null
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+async function init() {
+  const { data: { session } } = await sb.auth.getSession()
+  if (!session) {
+    window.location.href = 'mytwins_auth.html'
+    return
+  }
+  currentUser = session.user
+  document.getElementById('user-nickname').textContent =
+    session.user.user_metadata?.nickname || session.user.email.split('@')[0]
+
+  // Check if profile exists — robust version
+  try {
+    const { data: profiles } = await sb.from('profiles')
+      .select('*').eq('user_id', currentUser.id)
+
+    if (profiles && profiles.length > 0) {
+      currentProfile = profiles[0]
+
+      // Check if physical profile exists
+      const { data: physProfiles } = await sb.from('physical_profiles')
+        .select('*').eq('profile_id', currentProfile.id)
+
+      if (physProfiles && physProfiles.length > 0 && physProfiles[0].ethnicity) {
+        // Profile complete — load data and show feed
+        currentPhysProfile = physProfiles[0]
+        profileData = {
+          ethnicity: physProfiles[0].ethnicity,
+          eye_color: physProfiles[0].eye_color,
+          hair_color: physProfiles[0].hair_color,
+          face_shape: physProfiles[0].face_shape,
+          build: physProfiles[0].build,
+          height_cm: physProfiles[0].height_cm,
+          gender: physProfiles[0].gender,
+          features: physProfiles[0].features || [],
+          scars: physProfiles[0].scars || [],
+          hobbies: currentProfile.hobbies || [],
+          character: currentProfile.character || '',
+        }
+        showSection('feed')
+        loadFeed()
+        loadChatMatches()
+        loadRadarPoints()
+        showToast('Welcome back, ' + currentProfile.nickname + '! 👋')
+      } else {
+        // Profile incomplete — show wizard
+        showSection('wizard')
+      }
+    } else {
+      // No profile found — create one automatically
+      const nickname = currentUser.user_metadata?.nickname ||
+                       currentUser.email.split('@')[0]
+      const { data: newProfile } = await sb.from('profiles')
+        .insert({ user_id: currentUser.id, nickname: nickname })
+        .select().single()
+
+      if (newProfile) {
+        currentProfile = newProfile
+        showSection('wizard')
+      } else {
+        showToast('Profile error — please sign out and sign in again.')
+      }
+    }
+  } catch (err) {
+    console.error('Init error:', err)
+    showToast('Connection error. Please refresh the page.')
+  }
+}
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+const sections = ['wizard','feed','chat','radar','profile']
+const tabIds = {'feed':'tab-feed','chat':'tab-chat','radar':'tab-radar','profile':'tab-profile'}
+
+function showSection(id) {
+  sections.forEach(s => {
+    document.getElementById('section-'+s)?.classList.toggle('on', s===id)
+  })
+  Object.entries(tabIds).forEach(([s,t]) => {
+    document.getElementById(t)?.classList.toggle('on', s===id)
+  })
+  if (id === 'feed') loadFeed()
+  if (id === 'chat') loadChatMatches()
+  if (id === 'radar') loadRadarFeed()
+  if (id === 'profile') loadProfileSummary()
+}
+
+// ══════════════════════════════════════
+// WIZARD
+// ══════════════════════════════════════
+function updateWizProgress() {
+  const pct = Math.round(((wizStep-1)/6)*100)
+  document.getElementById('wiz-progress').style.width = pct+'%'
+  document.getElementById('wiz-pct').textContent = pct+'%'
+}
+
+function wizNext(step) {
+  document.getElementById('wiz-step-'+step).style.display = 'none'
+  wizStep = step + 1
+  document.getElementById('wiz-step-'+wizStep).style.display = 'block'
+  updateWizProgress()
+  window.scrollTo(0, 0)
+}
+
+function wizBack(step) {
+  document.getElementById('wiz-step-'+step).style.display = 'none'
+  wizStep = step - 1
+  document.getElementById('wiz-step-'+wizStep).style.display = 'block'
+  updateWizProgress()
+  window.scrollTo(0, 0)
+}
+
+function pickChip(el, field) {
+  const group = document.getElementById('chips-'+field)
+  if (group) group.querySelectorAll('.chip').forEach(c => c.classList.remove('on'))
+  el.classList.add('on')
+  profileData[field] = el.textContent.trim()
+}
+
+function pickSwatch(el, field, value) {
+  el.closest('.swatch-grid').querySelectorAll('.swatch').forEach(s => s.classList.remove('on'))
+  el.classList.add('on')
+  profileData[field] = value
+}
+
+function pickMulti(el, field) {
+  el.classList.toggle('on')
+  if (!profileData[field]) profileData[field] = []
+  const val = el.textContent.trim()
+  if (el.classList.contains('on')) {
+    if (!profileData[field].includes(val)) profileData[field].push(val)
+  } else {
+    profileData[field] = profileData[field].filter(v => v !== val)
+  }
+}
+
+function updateCharCount() {
+  const txt = document.getElementById('character-text').value
+  document.getElementById('char-count').textContent = txt.length
+  profileData.character = txt
+}
+
+function handlePhotos(input) {
+  const files = Array.from(input.files).slice(0, 4)
+  profileData.photos = files
+  files.forEach((file, i) => {
+    const slot = document.getElementById('slot-'+i)
+    if (slot) {
+      slot.innerHTML = `<span style="font-size:36px;">📸</span>`
+      slot.classList.add('has-photo')
+    }
+  })
+  showToast(files.length + ' photo(s) selected!')
+}
+
+async function saveProfile() {
+  // Try to reload profile if missing
+  if (!currentProfile) {
+    const { data: profiles } = await sb.from('profiles')
+      .select('*').eq('user_id', currentUser.id)
+    if (profiles && profiles.length > 0) {
+      currentProfile = profiles[0]
+    } else {
+      showToast('Error: profile not found. Please sign out and sign in again.')
+      return
+    }
+  }
+
+  profileData.height_cm = parseInt(document.getElementById('height-slider').value)
+  profileData.character = document.getElementById('character-text').value
+
+  try {
+    // Save physical profile
+    const { error } = await sb.from('physical_profiles').upsert({
+      profile_id: currentProfile.id,
+      ethnicity: profileData.ethnicity || null,
+      eye_color: profileData.eye_color || null,
+      hair_color: profileData.hair_color || null,
+      face_shape: profileData.face_shape || null,
+      build: profileData.build || null,
+      height_cm: profileData.height_cm || 170,
+      gender: profileData.gender || null,
+      features: profileData.features || [],
+      scars: profileData.scars || [],
+    })
+
+    if (error) { showToast('Error saving profile: ' + error.message); return }
+
+    // Save character and hobbies to profiles table
+    await sb.from('profiles').update({
+      character: profileData.character || null,
+      hobbies: profileData.hobbies || [],
+      allow_radar: document.getElementById('pref-twin-radar').checked,
+      allow_video: document.getElementById('pref-video-calls').checked,
+    }).eq('id', currentProfile.id)
+
+    showToast('Profile saved! Welcome to MY TWINS!')
+    setTimeout(() => {
+      showSection('feed')
+      loadFeed()
+    }, 1500)
+
+  } catch (err) {
+    showToast('Connection error. Please try again.')
+  }
+}
+
+// ══════════════════════════════════════
+// FEED
+// ══════════════════════════════════════
+const mockProfiles = [
+  {id:'#4821',face:'👩',pct:91,traits:'Green eyes · Brown hair · Oval face',hobbies:['🐕 Dogs','🥾 Hiking','📸 Photography']},
+  {id:'#7203',face:'👨',pct:87,traits:'Hazel eyes · Medium build · 180cm',hobbies:['🎣 Fishing','🎮 Gaming','🍕 Food']},
+  {id:'#2948',face:'🧑',pct:83,traits:'Brown hair · Freckles · Oval face',hobbies:['🏊 Swimming','🎵 Music','✈️ Travelling']},
+  {id:'#5512',face:'👱',pct:79,traits:'Green eyes · Blonde hair · Dimples',hobbies:['🧘 Yoga','📚 Reading','🌿 Gardening']},
+  {id:'#3317',face:'👩‍🦱',pct:76,traits:'Curly hair · Prominent cheekbones',hobbies:['🐴 Horses','🎨 Painting','🏕️ Camping']},
+  {id:'#8801',face:'🧔',pct:74,traits:'Oval face · Average build · 168cm',hobbies:['⚽ Football','🎬 Cinema','🍷 Wine']},
+]
+
+function loadFeed() {
+  const grid = document.getElementById('feed-grid')
+  grid.innerHTML = mockProfiles.map(p => `
+    <div class="feed-card">
+      <div class="feed-photo">${p.face}</div>
+      <button class="report-btn-feed" onclick="event.stopPropagation();showToast('Report sent to abuse@mytwins.app')" aria-label="Report profile">
+        <i class="ti ti-flag" aria-hidden="true"></i>
+      </button>
+      <div class="feed-meta">
+        <div class="feed-pct">${p.pct}% <span>similarity</span></div>
+        <div class="feed-traits">${p.traits}</div>
+        <div class="feed-hobbies">
+          ${p.hobbies.map(h => `<span class="hobby-tag">${h}</span>`).join('')}
+        </div>
+        <div class="feed-bar"><div class="feed-fill" style="width:${p.pct}%"></div></div>
+        <button class="btn-match" onclick="sendMatchRequest('${p.id}')">
+          <i class="ti ti-heart" style="font-size:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"></i>
+          Request match
+        </button>
+      </div>
+    </div>
+  `).join('')
+}
+
+function setFilter(btn) {
+  document.querySelectorAll('.ff').forEach(b => b.classList.remove('on'))
+  btn.classList.add('on')
+  const shuffled = [...mockProfiles].sort(() => Math.random() - .5)
+  const grid = document.getElementById('feed-grid')
+  grid.innerHTML = shuffled.map(p => `
+    <div class="feed-card">
+      <div class="feed-photo">${p.face}</div>
+      <div class="feed-meta">
+        <div class="feed-pct">${p.pct}% <span>similarity</span></div>
+        <div class="feed-traits">${p.traits}</div>
+        <div class="feed-hobbies">${p.hobbies.map(h=>`<span class="hobby-tag">${h}</span>`).join('')}</div>
+        <div class="feed-bar"><div class="feed-fill" style="width:${p.pct}%"></div></div>
+        <button class="btn-match" onclick="sendMatchRequest('${p.id}')">
+          <i class="ti ti-heart" style="font-size:13px;vertical-align:-1px;margin-right:5px" aria-hidden="true"></i>
+          Request match
+        </button>
+      </div>
+    </div>
+  `).join('')
+}
+
+async function sendMatchRequest(userId) {
+  showToast('Match request sent to ' + userId + '! We\'ll notify you when they respond.')
+}
+
+// ══════════════════════════════════════
+// CHAT + VIDEO
+// ══════════════════════════════════════
+const mockMatches = [
+  {id:'m1',face:'👩',name:'User #4821',pct:91,lastMsg:'Hi! I think we look alike too 😊',unread:2},
+  {id:'m2',face:'👨',name:'User #7203',pct:87,lastMsg:'Amazing! We have the same eyes',unread:0},
+]
+
+const mockMessages = {
+  m1: [
+    {sender:'them',text:'Hi! I just saw your profile and I think we look really similar!',time:'10:14'},
+    {sender:'me',text:'Wow, you\'re right! Same green eyes and oval face 😊',time:'10:16'},
+    {sender:'them',text:'And we both love hiking and dogs! This is incredible',time:'10:17'},
+    {sender:'me',text:'Should we do a video call to compare? 😄',time:'10:19'},
+  ],
+  m2: [
+    {sender:'them',text:'Amazing match! 87% similarity is incredible',time:'Yesterday'},
+    {sender:'me',text:'I know! Same hazel eyes and build. Where are you from?',time:'Yesterday'},
+    {sender:'them',text:'I\'m from Brazil! You?',time:'Yesterday'},
+  ]
+}
+
+function loadChatMatches() {
+  const list = document.getElementById('chat-matches-list')
+  list.innerHTML = mockMatches.map(m => `
+    <div class="chat-match-item" id="cmi-${m.id}" onclick="openChat('${m.id}')">
+      <div class="chat-ava">${m.face}</div>
+      <div style="flex:1;">
+        <div class="chat-name">${m.name} · ${m.pct}%</div>
+        <div class="chat-preview">${m.lastMsg}</div>
+      </div>
+      ${m.unread > 0 ? `<div class="unread-badge">${m.unread}</div>` : ''}
+    </div>
+  `).join('')
+}
+
+function openChat(matchId) {
+  currentChatMatch = matchId
+  document.querySelectorAll('.chat-match-item').forEach(el => el.classList.remove('on'))
+  document.getElementById('cmi-'+matchId)?.classList.add('on')
+
+  const match = mockMatches.find(m => m.id === matchId)
+  const messages = mockMessages[matchId] || []
+
+  document.getElementById('chat-main').innerHTML = `
+    <div class="chat-header">
+      <div class="chat-header-ava">${match.face}</div>
+      <div>
+        <div class="chat-header-name">${match.name}</div>
+        <div class="chat-header-status">● Online · ${match.pct}% similarity</div>
+      </div>
+      <div class="chat-actions">
+        <button class="chat-action-btn" onclick="showToast('Photo sharing — coming soon!')" title="Send photo">
+          <i class="ti ti-photo" aria-hidden="true"></i>
+        </button>
+        <button class="chat-action-btn" onclick="showToast('Video message — coming soon!')" title="Send video">
+          <i class="ti ti-video" aria-hidden="true"></i>
+        </button>
+        <button class="chat-action-btn video" onclick="startVideoCall('${matchId}')" title="Video call">
+          <i class="ti ti-video-plus" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-msgs">
+      <div class="system-msg">🔒 Anonymous encrypted chat — no personal data shared</div>
+      ${messages.map(m => `
+        <div class="msg-row ${m.sender === 'me' ? 'mine' : ''}">
+          ${m.sender !== 'me' ? `<div class="msg-ava">${match.face}</div>` : ''}
+          <div>
+            <div class="bubble ${m.sender === 'me' ? 'mine' : 'theirs'}">${m.text}</div>
+            <div class="bubble-time">${m.time}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="chat-input-wrap">
+      <input type="file" id="chat-file" class="file-input" accept="image/*,video/*" onchange="sendMedia(this)">
+      <button class="chat-btn" onclick="document.getElementById('chat-file').click()" title="Attach file">
+        <i class="ti ti-paperclip" aria-hidden="true"></i>
+      </button>
+      <textarea class="chat-input" id="chat-text" placeholder="Type a message..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+        oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+      <button class="chat-btn send" onclick="sendMessage()" title="Send">
+        <i class="ti ti-send" aria-hidden="true"></i>
+      </button>
+    </div>
+  `
+
+  // Scroll to bottom
+  setTimeout(() => {
+    const msgs = document.getElementById('chat-msgs')
+    if (msgs) msgs.scrollTop = msgs.scrollHeight
+  }, 100)
+}
+
+function sendMessage() {
+  const input = document.getElementById('chat-text')
+  const text = input?.value?.trim()
+  if (!text) return
+
+  const msgs = document.getElementById('chat-msgs')
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+  msgs.innerHTML += `
+    <div class="msg-row mine">
+      <div>
+        <div class="bubble mine">${text}</div>
+        <div class="bubble-time">${now}</div>
+      </div>
+    </div>
+  `
+  input.value = ''
+  input.style.height = 'auto'
+  msgs.scrollTop = msgs.scrollHeight
+}
+
+function sendMedia(input) {
+  if (!input.files[0]) return
+  const file = input.files[0]
+  const isVideo = file.type.startsWith('video/')
+  const msgs = document.getElementById('chat-msgs')
+  const url = URL.createObjectURL(file)
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+  msgs.innerHTML += `
+    <div class="msg-row mine">
+      <div>
+        <div class="bubble-media">
+          ${isVideo
+            ? `<video src="${url}" controls style="max-width:200px;border-radius:10px;"></video>`
+            : `<img src="${url}" style="max-width:200px;border-radius:10px;" alt="Sent image">`
+          }
+        </div>
+        <div class="bubble-time">${now}</div>
+      </div>
+    </div>
+  `
+  msgs.scrollTop = msgs.scrollHeight
+  showToast(isVideo ? 'Video sent!' : 'Photo sent!')
+}
+
+// ══════════════════════════════════════
+// VIDEO CALL
+// ══════════════════════════════════════
+function startVideoCall(matchId) {
+  const match = mockMatches.find(m => m.id === matchId)
+  document.getElementById('video-partner-name').textContent = 'Video call with ' + match.name
+  document.getElementById('video-overlay').classList.add('open')
+
+  // Daily.co — create room URL
+  // In production: create a room via Daily.co API and get the URL
+  // For now show a placeholder
+  const frame = document.getElementById('daily-frame')
+  frame.src = 'about:blank'
+
+  showToast('Video call starting... (Daily.co integration required for production)')
+}
+
+function endCall() {
+  document.getElementById('video-overlay').classList.remove('open')
+  document.getElementById('daily-frame').src = 'about:blank'
+  showToast('Call ended')
+}
+
+function toggleMic() { showToast('Microphone toggled') }
+function toggleCam() { showToast('Camera toggled') }
+
+// ══════════════════════════════════════
+// TWIN RADAR
+// ══════════════════════════════════════
+function loadRadarFeed() {
+  const grid = document.getElementById('radar-feed-grid')
+  radarSelected = []
+  grid.innerHTML = mockProfiles.slice(0,6).map((p,i) => `
+    <div class="radar-card" id="rc-${i}" onclick="selectRadar(${i},'${p.face}','${p.id}')">
+      <div class="radar-check"><i class="ti ti-check" style="font-size:10px" aria-hidden="true"></i></div>
+      <div class="radar-face">${p.face}</div>
+      <div class="radar-id">${p.id}</div>
+    </div>
+  `).join('')
+  document.getElementById('radar-pair-preview').style.display = 'none'
+}
+
+function selectRadar(idx, face, id) {
+  const card = document.getElementById('rc-'+idx)
+  if (radarSelected.find(r => r.idx === idx)) {
+    radarSelected = radarSelected.filter(r => r.idx !== idx)
+    card.classList.remove('picked')
+  } else if (radarSelected.length < 2) {
+    radarSelected.push({idx, face, id})
+    card.classList.add('picked')
+  }
+  if (radarSelected.length === 2) {
+    document.getElementById('radar-face-a').textContent = radarSelected[0].face
+    document.getElementById('radar-face-b').textContent = radarSelected[1].face
+    document.getElementById('radar-pair-preview').style.display = 'block'
+  } else {
+    document.getElementById('radar-pair-preview').style.display = 'none'
+  }
+}
+
+async function sendRadarSignal() {
+  if (radarSelected.length < 2) return
+  showToast('Twin Radar signal sent! +10 points earned 🎯')
+  document.getElementById('radar-total').textContent =
+    (parseInt(document.getElementById('radar-total').textContent) || 0) + 10
+  document.getElementById('radar-signals').textContent =
+    (parseInt(document.getElementById('radar-signals').textContent) || 0) + 1
+  radarSelected = []
+  loadRadarFeed()
+}
+
+async function loadRadarPoints() {
+  // Load from Supabase in production
+  document.getElementById('radar-total').textContent = '0'
+  document.getElementById('radar-signals').textContent = '0'
+  document.getElementById('radar-matches').textContent = '0'
+  document.getElementById('radar-rank').textContent = '🌱'
+}
+
+// ══════════════════════════════════════
+// PROFILE SUMMARY
+// ══════════════════════════════════════
+async function loadProfileSummary() {
+  if (!currentProfile) return
+  const { data: phys } = await sb.from('physical_profiles')
+    .select('*').eq('profile_id', currentProfile.id).single()
+
+  const summary = document.getElementById('profile-summary')
+  if (!phys) {
+    summary.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">Complete your profile to see it here.</div>'
+    return
+  }
+
+  const hobbies = currentProfile.hobbies || []
+  const character = currentProfile.character || ''
+
+  summary.innerHTML = `
+    <div class="ps-header">
+      <div class="ps-ava">😊</div>
+      <div>
+        <div class="ps-name">${currentProfile.nickname || 'You'}</div>
+        <div class="ps-sub">MY TWINS member · Profile complete</div>
+      </div>
+    </div>
+    <div class="ps-grid">
+      <div class="ps-item"><div class="ps-label">Ethnicity</div><div class="ps-val">${phys.ethnicity || '—'}</div></div>
+      <div class="ps-item"><div class="ps-label">Eye colour</div><div class="ps-val">${phys.eye_color || '—'}</div></div>
+      <div class="ps-item"><div class="ps-label">Hair colour</div><div class="ps-val">${phys.hair_color || '—'}</div></div>
+      <div class="ps-item"><div class="ps-label">Face shape</div><div class="ps-val">${phys.face_shape || '—'}</div></div>
+      <div class="ps-item"><div class="ps-label">Build</div><div class="ps-val">${phys.build || '—'}</div></div>
+      <div class="ps-item"><div class="ps-label">Height</div><div class="ps-val">${phys.height_cm ? phys.height_cm + ' cm' : '—'}</div></div>
+    </div>
+    ${hobbies.length > 0 ? `
+      <div class="ps-hobbies">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;">Hobbies & Interests</div>
+        <div class="feed-hobbies">${hobbies.map(h => `<span class="hobby-tag">${h}</span>`).join('')}</div>
+      </div>
+    ` : ''}
+    ${character ? `<div class="ps-char">"${character}"</div>` : ''}
+  `
+}
+
+// ══════════════════════════════════════
+// UTILITY
+// ══════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.classList.add('show')
+  setTimeout(() => t.classList.remove('show'), 3000)
+}
+
+async function signOut() {
+  await sb.auth.signOut()
+  window.location.href = 'index.html'
+}
+
+// Start
+init()
+</script>
+</body>
+</html>
